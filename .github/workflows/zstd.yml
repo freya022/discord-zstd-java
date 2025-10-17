@@ -57,7 +57,7 @@ jobs:
               cd build-$arch
               if [[ "$arch" == "ARM64" ]]; then
                 sudo apt update
-                sudo apt install gcc-aarch64-linux-gnu
+                sudo apt install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
                 cmake $COMMON_CMAKE_FLAGS -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ ..
               elif [[ "$arch" == "ARM" ]]; then
                 sudo apt update
