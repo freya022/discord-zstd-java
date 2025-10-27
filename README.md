@@ -4,7 +4,7 @@ Modular support for Zstandard streaming decompression, for JVM Discord API wrapp
 
 ## Installation - Bot developers
 
-If the Discord API wrapper requires you to install this library, you can choose between two different implementations
+You're likely here if you want to use Zstd decompression for your Discord bot! You can choose between two different implementations:
 
 ### For Java 22+ (Recommended)
 
