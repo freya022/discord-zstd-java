@@ -1,5 +1,5 @@
 [libraries]
 findbugs = "com.google.code.findbugs:jsr305:3.0.2"
 jna = "net.java.dev.jna:jna:5.18.1"
-maven-publish-plugin = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin:0.34.0"
+jreleaser = "org.jreleaser:org.jreleaser.gradle.plugin:1.20.0"
 slf4j = "org.slf4j:slf4j-api:2.0.17"

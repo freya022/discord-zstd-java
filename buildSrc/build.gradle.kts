@@ -10,5 +10,5 @@ repositories {
 
 dependencies {
     implementation(gradleApi())
-    implementation(libs.maven.publish.plugin)
+    implementation(libs.jreleaser)
 }

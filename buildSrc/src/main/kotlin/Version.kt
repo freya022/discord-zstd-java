@@ -7,13 +7,11 @@ data class Version(
     val minor: String,
     val revision: String,
     val classifier: String?,
-    val isDev: Boolean,
 ) : Serializable {
 
     override fun toString(): String = buildString {
         append("$major.$minor.$revision")
         if (classifier?.isNotBlank() == true) append("-$classifier")
-        if (isDev) append("_DEV")
     }
 
     private fun writeObject(out: ObjectOutputStream) {

@@ -1,9 +1,12 @@
 plugins {
+    `java-library`
     `publish-conventions`
 }
 
+val fullProjectName = "${rootProject.name}-${project.name}"
+
 tasks.withType<Jar> {
-    archiveBaseName = "${rootProject.name}-api-jna"
+    archiveBaseName = fullProjectName
 }
 
 repositories {
@@ -23,6 +26,11 @@ dependencies {
     implementation(libs.jna)
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.isIncremental = true
@@ -30,9 +38,10 @@ tasks.withType<JavaCompile> {
     options.release.set(8)
 }
 
-configurePublishedArtifact(
-    artifactId = "discord-zstd-java-api-jna",
+registerPublication(
+    name = fullProjectName,
     description = "Zstandard streaming decompression API for JVM Discord API wrappers using Java Native Access (JNA)",
     url = "https://github.com/freya022/discord-zstd-java/tree/master/api-jna",
-    packaging = "jar"
-)
+) {
+    from(components["java"])
+}
