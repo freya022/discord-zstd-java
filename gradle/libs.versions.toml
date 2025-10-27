@@ -1,0 +1,4 @@
+[libraries]
+findbugs = "com.google.code.findbugs:jsr305:3.0.2"
+jna = "net.java.dev.jna:jna:5.18.1"
+slf4j = "org.slf4j:slf4j-api:2.0.17"
