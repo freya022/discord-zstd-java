@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 public interface ZstdDecompressor {
     void reset();
 
-    void shutdown();
+    void close();
 
     @Nonnull
     byte[] decompress(@Nonnull byte[] data);

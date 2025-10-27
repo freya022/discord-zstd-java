@@ -47,7 +47,7 @@ public class ZstdFFIDecompressor extends AbstractZstdDecompressor {
     }
 
     @Override
-    public void shutdown()
+    public void close()
     {
         if (shutdown)
             return;
