@@ -12,11 +12,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ZstdJNADecompressor extends AbstractZstdDecompressor {
+
     private static final Logger LOG = LoggerFactory.getLogger(ZstdJNADecompressor.class);
 
     private final Pointer stream;
     private final ZstdJna.ZSTD_outBuffer outputSegment;
 
+    private boolean invalidated = false;
     private boolean shutdown = false;
 
     public ZstdJNADecompressor(int maxBufferSize)
@@ -35,6 +37,7 @@ public class ZstdJNADecompressor extends AbstractZstdDecompressor {
             throw new IllegalStateException("Decompressor has shut down");
 
         ZstdJna.INSTANCE.ZSTD_initDStream(stream);
+        invalidated = false;
     }
 
     @Override
@@ -59,6 +62,8 @@ public class ZstdJNADecompressor extends AbstractZstdDecompressor {
     {
         if (shutdown)
             throw new IllegalStateException("Decompressor has shut down");
+        if (invalidated)
+            throw new IllegalStateException("Decompressor is in an errored state and needs to be reset");
 
         if (LOG.isTraceEnabled())
             LOG.trace("Decompressing data {}", Arrays.toString(data));
@@ -95,18 +100,23 @@ public class ZstdJNADecompressor extends AbstractZstdDecompressor {
                 return mergeChunks(chunks, bytes);
             } else if (result > 0) {
                 if (!fullyProcessedInput && !madeForwardProgress) {
-                    throw new ZstdException("Malformed");
+                    throw createException("Malformed");
                 }
 
                 chunks.add(bytes);
                 // No need to save the input offset as we'll pass the same ZSTD_inBuffer struct again
             } else {
                 if (ZstdJna.INSTANCE.ZSTD_isError(result) > 0) {
-                    throw new ZstdException(ZstdJna.INSTANCE.ZSTD_getErrorName(result));
+                    throw createException(ZstdJna.INSTANCE.ZSTD_getErrorName(result));
                 } else {
-                    throw new ZstdException(String.format("Unexpected result: %d, is error: %s", result, ZstdJna.INSTANCE.ZSTD_isError(result)));
+                    throw createException(String.format("Unexpected result: %d, is error: %s", result, ZstdJna.INSTANCE.ZSTD_isError(result)));
                 }
             }
         }
+    }
+
+    private ZstdException createException(String message) {
+        invalidated = true;
+        return new ZstdException(message);
     }
 }

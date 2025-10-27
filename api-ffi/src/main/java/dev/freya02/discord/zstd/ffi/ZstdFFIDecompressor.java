@@ -20,6 +20,7 @@ public class ZstdFFIDecompressor extends AbstractZstdDecompressor {
     private final MemorySegment stream;
     private final MemorySegment outputSegment;
 
+    private boolean invalidated = false;
     private boolean shutdown = false;
 
     public ZstdFFIDecompressor(int maxBufferSize)
@@ -42,6 +43,7 @@ public class ZstdFFIDecompressor extends AbstractZstdDecompressor {
             throw new IllegalStateException("Decompressor has shut down");
 
         Zstd.ZSTD_initDStream(stream);
+        invalidated = false;
     }
 
     @Override
@@ -66,6 +68,8 @@ public class ZstdFFIDecompressor extends AbstractZstdDecompressor {
     {
         if (shutdown)
             throw new IllegalStateException("Decompressor has shut down");
+        if (invalidated)
+            throw new IllegalStateException("Decompressor is in an errored state and needs to be reset");
 
         if (LOG.isTraceEnabled())
             LOG.trace("Decompressing data {}", Arrays.toString(data));
@@ -101,19 +105,24 @@ public class ZstdFFIDecompressor extends AbstractZstdDecompressor {
                     return mergeChunks(chunks, bytes);
                 } else if (result > 0) {
                     if (!fullyProcessedInput && !madeForwardProgress) {
-                        throw new ZstdException("Malformed");
+                        throw createException("Malformed");
                     }
 
                     chunks.add(bytes);
                     // No need to save the input offset as we'll pass the same ZSTD_inBuffer struct again
                 } else {
                     if (Zstd.ZSTD_isError(result) > 0) {
-                        throw new ZstdException(Zstd.ZSTD_getErrorName(result).getString(0));
+                        throw createException(Zstd.ZSTD_getErrorName(result).getString(0));
                     } else {
-                        throw new ZstdException("Unexpected result: %d, is error: %s".formatted(result, Zstd.ZSTD_isError(result)));
+                        throw createException("Unexpected result: %d, is error: %s".formatted(result, Zstd.ZSTD_isError(result)));
                     }
                 }
             }
         }
+    }
+
+    private ZstdException createException(String message) {
+        invalidated = true;
+        return new ZstdException(message);
     }
 }
