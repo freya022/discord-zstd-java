@@ -5,8 +5,6 @@ import dev.freya02.discord.zstd.ZstdDecompressorFactory;
 import dev.freya02.discord.zstd.ZstdNativesLoader;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 
 public class ZstdFFIDecompressorFactory implements ZstdDecompressorFactory {
     @Nonnull
