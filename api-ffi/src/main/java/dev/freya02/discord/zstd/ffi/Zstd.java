@@ -32,7 +32,7 @@ import static java.lang.foreign.ValueLayout.JAVA_BYTE;
  * either there is still some data left to flush within internal buffers,
  * or there is more input to read to complete the frame (or both).
  * In which case, call {@link #ZSTD_decompressStream(MemorySegment, MemorySegment, MemorySegment)} again to flush whatever remains in the buffer.
- * Note : with no additional input provided, amount of data flushed is necessarily <= 131072.
+ * Note : with no additional input provided, amount of data flushed is necessarily &lt;= 131072.
  *  - return : 0 when a frame is completely decoded and fully flushed,
  *       or an error code, which can be tested using {@link #ZSTD_isError(long)},
  *       or any other value > 0, which means there is still some decoding or flushing to do to complete current frame :
@@ -302,7 +302,7 @@ public final class Zstd {
      *      </li>
      *  </ul>
      *
-     *  <p>Note : with no additional input, amount of data flushed <= 131072.
+     *  <p>Note : with no additional input, amount of data flushed &lt;= 131072.
      *
      *  <p>Note: when an operation returns with an error code, the {@code zds} state may be left in undefined state.
      *  It's UB to invoke {@code ZSTD_decompressStream()} on such a state.
