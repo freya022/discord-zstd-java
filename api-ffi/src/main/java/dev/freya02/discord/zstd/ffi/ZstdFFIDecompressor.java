@@ -38,12 +38,18 @@ public class ZstdFFIDecompressor extends AbstractZstdDecompressor {
     @Override
     public void reset()
     {
+        if (shutdown)
+            throw new IllegalStateException("Decompressor has shut down");
+
         Zstd.ZSTD_initDStream(stream);
     }
 
     @Override
     public void shutdown()
     {
+        if (shutdown)
+            return;
+
         shutdown = true;
         Zstd.ZSTD_freeDStream(stream);
         // outputSegment is managed by GC

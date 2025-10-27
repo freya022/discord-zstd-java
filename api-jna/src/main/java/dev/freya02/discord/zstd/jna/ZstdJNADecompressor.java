@@ -31,12 +31,18 @@ public class ZstdJNADecompressor extends AbstractZstdDecompressor {
     @Override
     public void reset()
     {
+        if (shutdown)
+            throw new IllegalStateException("Decompressor has shut down");
+
         ZstdJna.INSTANCE.ZSTD_initDStream(stream);
     }
 
     @Override
     public void shutdown()
     {
+        if (shutdown)
+            return;
+
         shutdown = true;
         ZstdJna.INSTANCE.ZSTD_freeDStream(stream);
         // outputSegment is managed by GC
