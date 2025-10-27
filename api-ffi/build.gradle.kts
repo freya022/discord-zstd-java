@@ -1,9 +1,6 @@
 plugins {
-    `java-library`
+    `publish-conventions`
 }
-
-project.group = rootProject.group
-project.version = rootProject.version
 
 tasks.withType<Jar> {
     archiveBaseName = "${rootProject.name}-api-ffi"
@@ -23,14 +20,16 @@ dependencies {
     implementation(libs.slf4j)
 }
 
-java {
-    withSourcesJar()
-    withJavadocJar()
-}
-
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.isIncremental = true
 
     options.release.set(22)
 }
+
+configurePublishedArtifact(
+    artifactId = "discord-zstd-java-api-ffi",
+    description = "Zstandard streaming decompression API for JVM Discord API wrappers using the Foreign Function & Memory API",
+    url = "https://github.com/freya022/discord-zstd-java/tree/master/api-ffi",
+    packaging = "jar"
+)
