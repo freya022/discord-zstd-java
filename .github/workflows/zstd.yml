@@ -12,9 +12,6 @@ jobs:
     name: Build Zstd
     runs-on: ${{ matrix.os }}
 
-    outputs:
-      version: ${{ steps.print-version.outputs.version }}
-
     strategy:
       fail-fast: false # Run the other two OSs even if one fails
       matrix:
@@ -25,16 +22,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           repository: facebook/zstd
-
-      # https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/pass-job-outputs#defining-and-using-job-outputs
-      - name: Checkout latest Tag
-        id: print-version
-        shell: bash
-        run: |
-          git fetch --tags
-          LATEST_TAG=$(git tag | grep -E ^v[0-9]+.[0-9]+.[0-9]+$ | tail -1)
-          git checkout "$LATEST_TAG"
-          echo "version=$LATEST_TAG" >> $GITHUB_OUTPUT
+          ref: "f8745da6ff1ad1e7bab384bd1f9d742439278e99" # v1.5.7
 
       - name: Build Zstd
         shell: bash
