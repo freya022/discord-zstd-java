@@ -2,22 +2,24 @@
 
 Modular support for Zstandard streaming decompression, for JVM Discord API wrappers.
 
-## Installation - Bot developers
+## 🤖 For bot developers
+
+### Installation
 
 You're likely here if you want to use Zstd decompression for your Discord bot! You can choose between two different implementations:
 
-### For Java 22+ (Recommended)
+#### For Java 22+ (Recommended)
 
 For improved performance, you can use this implementation based on the [Foreign Function & Memory API](https://openjdk.org/jeps/454).
 
-#### Gradle
+##### Gradle
 ```kotlin
 dependencies {
     runtimeOnly("dev.freya02:discord-zstd-java-ffm-impl:VERSION") // TODO replace VERSION with current release
 }
 ```
 
-#### Maven
+##### Maven
 ```xml
 <dependency>
     <groupId>dev.freya02</groupId>
@@ -27,16 +29,17 @@ dependencies {
 </dependency>
 ```
 
-### For Java 8+
+#### For Java 8+
 For maximum compatibility, you can use this implementation based on [JNA](https://github.com/java-native-access/jna).
 
+##### Gradle
 ```kotlin
 dependencies {
     runtimeOnly("dev.freya02:discord-zstd-java-jna-impl:VERSION") // TODO replace VERSION with current release
 }
 ```
 
-#### Maven
+##### Maven
 ```xml
 <dependency>
     <groupId>dev.freya02</groupId>
@@ -46,18 +49,18 @@ dependencies {
 </dependency>
 ```
 
-## Installation - Library developers
-
-You will only need the `dev.freya02:discord-zstd-java-api:VERSION` dependency.
-
-## Usage - Bot developers
-
+### Usage
 As a bot developer, you don't need to do anything.
 
 If you want to load a different version of the native library,
 you can do so by calling `ZstdNativesLoader.load(Path)` or `loadFromJar(String)`. These functions will return `false` if the natives were already loaded, as they can't be replaced.
 
-## Usage - Library developers
+## 📖 For library developers
+### Installation
+
+You will only need the `dev.freya02:discord-zstd-java-api:VERSION` dependency.
+
+### Usage
 
 You can check if the natives are loaded by checking `ZstdNativesLoader.isLoaded()`,
 but usually you'll want to call `loadFromJar()`, you should do it late enough so the bot developer has a chance to load different natives.
