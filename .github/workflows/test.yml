@@ -1,0 +1,83 @@
+name: Test discord-zstd-java
+on:
+  push:
+    branches:
+      - master
+
+env:
+  COMMON_CMAKE_FLAGS: "-DZSTD_BUILD_PROGRAMS=OFF -DZSTD_LEGACY_SUPPORT=OFF -DZSTD_BUILD_STATIC=OFF -DBUILD_SHARED_LIBS=ON -DZSTD_BUILD_DICTBUILDER=OFF -DZSTD_BUILD_COMPRESSION=OFF -DCMAKE_BUILD_TYPE=Debug"
+
+jobs:
+  build:
+    name: Build Zstd
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone zstd repo
+        uses: actions/checkout@v5
+        with:
+          repository: facebook/zstd
+          ref: "f8745da6ff1ad1e7bab384bd1f9d742439278e99" # v1.5.7
+
+      - name: Build Zstd
+        shell: bash
+        run: |
+          cd build/cmake
+          mkdir -p ../../output/x64
+          mkdir build-x64
+          cd build-x64
+          cmake $COMMON_CMAKE_FLAGS ..
+          cmake --build . -j 4
+          cp lib/libzstd.so ../../../output/x64/libzstd.so
+          cd ..
+          
+
+      - name: Publish Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: zstd-ubuntu-latest
+          path: output
+
+  test:
+    name: Test discord-zstd-java
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-disabled: true
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: temp
+          pattern: zstd-ubuntu-latest
+          merge-multiple: true
+
+      - name: Move Artifacts
+        run: |
+          mkdir -p natives/src/main/resources/natives/win32-x86-64
+          mkdir -p natives/src/main/resources/natives/win32-aarch64
+          mkdir -p natives/src/main/resources/natives/linux-x86-64
+          mkdir -p natives/src/main/resources/natives/linux-arm
+          mkdir -p natives/src/main/resources/natives/linux-aarch64
+          mkdir -p natives/src/main/resources/natives/darwin
+          cp temp/x64/libzstd.dll natives/src/main/resources/natives/win32-x86-64/libzstd.dll
+          cp temp/ARM64/libzstd.dll natives/src/main/resources/natives/win32-aarch64/libzstd.dll
+          cp temp/x64/libzstd.so natives/src/main/resources/natives/linux-x86-64/libzstd.so
+          cp temp/ARM64/libzstd.so natives/src/main/resources/natives/linux-aarch64/libzstd.so
+          cp temp/ARM/libzstd.so natives/src/main/resources/natives/linux-arm/libzstd.so
+          cp temp/libzstd.dylib natives/src/main/resources/natives/darwin/libzstd.dylib
+
+      - name: Publish artifact
+        run: ./gradlew test
