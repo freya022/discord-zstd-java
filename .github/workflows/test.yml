@@ -76,3 +76,24 @@ jobs:
           TEST_DATA_ZSTD_KEY: ${{ secrets.TEST_DATA_ZSTD_KEY }}
           TEST_DATA_ZSTD_PARAMS: ${{ secrets.TEST_DATA_ZSTD_PARAMS }}
         run: ./gradlew test
+
+      - name: Upload JUnit XML Test Report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: junit-xml-test-report
+          path: '**/build/test-results/test'
+          
+      - name: Upload HTML Test Report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: junit-html-test-report
+          path: '**/build/reports/tests/test'
+          
+      - name: Annotate Failed Tests
+        uses: mikepenz/action-junit-report@v6
+        if: ${{ !cancelled() }}
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          annotate_only: 'true'
