@@ -45,8 +45,13 @@ tasks.withType<JavaCompile> {
 tasks.withType<Test> {
     useJUnitPlatform()
 
-    if (System.getenv("GITHUB_SHA") == null) {
-        exclude("test_decompression")
+    filter {
+        isFailOnNoMatchingTests = false
+
+        // Only the CI will put the natives in the expected spot
+        if (System.getenv("GITHUB_SHA") == null) {
+            excludeTestsMatching("ZstdJNATest")
+        }
     }
 }
 
