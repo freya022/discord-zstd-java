@@ -89,7 +89,7 @@ jobs:
           path: '**/build/reports/tests/test'
           
       - name: Annotate Failed Tests
-        uses: mikepenz/action-junit-report@v6
+        uses: mikepenz/action-junit-report@v6.0.0
         if: ${{ !cancelled() }}
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
