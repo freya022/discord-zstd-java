@@ -24,6 +24,10 @@ dependencies {
 
     // JNA
     implementation(libs.jna)
+
+    // JUnit 5 (JUnit 6 is not Java 8 compatible)
+    testImplementation(libs.bundles.junit)
+    testImplementation(project(":test-data"))
 }
 
 java {
@@ -36,6 +40,10 @@ tasks.withType<JavaCompile> {
     options.isIncremental = true
 
     options.release.set(8)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
 registerPublication(
