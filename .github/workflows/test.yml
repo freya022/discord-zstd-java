@@ -41,6 +41,7 @@ jobs:
   test:
     name: Test discord-zstd-java
     runs-on: ubuntu-latest
+    needs: [build]
 
     steps:
       - name: Clone repo
