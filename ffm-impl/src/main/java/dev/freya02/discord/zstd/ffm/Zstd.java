@@ -1,4 +1,4 @@
-package dev.freya02.discord.zstd.ffi;
+package dev.freya02.discord.zstd.ffm;
 
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
