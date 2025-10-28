@@ -67,18 +67,8 @@ jobs:
 
       - name: Move Artifacts
         run: |
-          mkdir -p natives/src/main/resources/natives/win32-x86-64
-          mkdir -p natives/src/main/resources/natives/win32-aarch64
           mkdir -p natives/src/main/resources/natives/linux-x86-64
-          mkdir -p natives/src/main/resources/natives/linux-arm
-          mkdir -p natives/src/main/resources/natives/linux-aarch64
-          mkdir -p natives/src/main/resources/natives/darwin
-          cp temp/x64/libzstd.dll natives/src/main/resources/natives/win32-x86-64/libzstd.dll
-          cp temp/ARM64/libzstd.dll natives/src/main/resources/natives/win32-aarch64/libzstd.dll
           cp temp/x64/libzstd.so natives/src/main/resources/natives/linux-x86-64/libzstd.so
-          cp temp/ARM64/libzstd.so natives/src/main/resources/natives/linux-aarch64/libzstd.so
-          cp temp/ARM/libzstd.so natives/src/main/resources/natives/linux-arm/libzstd.so
-          cp temp/libzstd.dylib natives/src/main/resources/natives/darwin/libzstd.dylib
 
       - name: Publish artifact
         run: ./gradlew test
