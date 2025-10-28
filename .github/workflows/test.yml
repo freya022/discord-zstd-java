@@ -72,7 +72,7 @@ jobs:
       - name: Run tests
         env:
           TEST_DATA_ZSTD_KEY: ${{ secrets.TEST_DATA_ZSTD_KEY }}
-          TEST_DATA_ZSTD_PARAMS: ${{ secrets.TEST_DATA_ZSTD_PARAMS }}
+          TEST_DATA_ZSTD_PARAMETERS: ${{ secrets.TEST_DATA_ZSTD_PARAMETERS }}
         run: ./gradlew test
 
       - name: Upload JUnit XML Test Report
