@@ -41,6 +41,10 @@ tasks.withType<JavaCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+
+    if (System.getenv("GITHUB_SHA") == null) {
+        exclude("test_decompression")
+    }
 }
 
 registerPublication(
