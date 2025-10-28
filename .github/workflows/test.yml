@@ -1,5 +1,6 @@
 name: Test discord-zstd-java
 on:
+  pull_request:
   push:
     branches:
       - master
