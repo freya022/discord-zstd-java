@@ -96,7 +96,11 @@ public class TestChunks {
         final String envVar = System.getenv(varName);
         if (envVar != null) return envVar;
 
-        return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+        try {
+            return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new IOException("Env var '" + varName + "' is not present", e);
+        }
     }
 
     private static boolean isCompressedChunk(Path path) {
