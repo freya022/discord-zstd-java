@@ -1,8 +1,8 @@
 package dev.freya02.discord.zstd.jna;
 
 import dev.freya02.discord.zstd.TestChunks;
-import dev.freya02.discord.zstd.ZstdDecompressor;
-import dev.freya02.discord.zstd.ZstdNativesLoader;
+import dev.freya02.discord.zstd.api.ZstdDecompressor;
+import dev.freya02.discord.zstd.api.ZstdNativesLoader;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

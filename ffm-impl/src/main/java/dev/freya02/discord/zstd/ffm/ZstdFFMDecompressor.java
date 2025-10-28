@@ -1,7 +1,7 @@
 package dev.freya02.discord.zstd.ffm;
 
-import dev.freya02.discord.zstd.AbstractZstdDecompressor;
-import dev.freya02.discord.zstd.ZstdException;
+import dev.freya02.discord.zstd.api.ZstdException;
+import dev.freya02.discord.zstd.internal.AbstractZstdDecompressor;
 import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

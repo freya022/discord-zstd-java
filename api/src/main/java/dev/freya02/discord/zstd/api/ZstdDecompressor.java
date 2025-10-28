@@ -1,4 +1,4 @@
-package dev.freya02.discord.zstd;
+package dev.freya02.discord.zstd.api;
 
 import org.jspecify.annotations.NullMarked;
 

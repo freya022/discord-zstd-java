@@ -1,8 +1,8 @@
 package dev.freya02.discord.zstd.ffm;
 
-import dev.freya02.discord.zstd.ZstdDecompressor;
-import dev.freya02.discord.zstd.ZstdDecompressorFactory;
-import dev.freya02.discord.zstd.ZstdNativesLoader;
+import dev.freya02.discord.zstd.api.ZstdDecompressor;
+import dev.freya02.discord.zstd.api.ZstdDecompressorFactory;
+import dev.freya02.discord.zstd.api.ZstdNativesLoader;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked

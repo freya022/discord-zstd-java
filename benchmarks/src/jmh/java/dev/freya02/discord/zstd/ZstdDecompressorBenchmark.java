@@ -1,5 +1,8 @@
 package dev.freya02.discord.zstd;
 
+import dev.freya02.discord.zstd.api.ZstdDecompressor;
+import dev.freya02.discord.zstd.api.ZstdDecompressorFactory;
+import dev.freya02.discord.zstd.api.ZstdNativesLoader;
 import dev.freya02.discord.zstd.ffm.ZstdFFMDecompressorFactory;
 import dev.freya02.discord.zstd.jna.ZstdJNADecompressorFactory;
 import net.dv8tion.jda.internal.utils.compress.ZlibDecompressor;
