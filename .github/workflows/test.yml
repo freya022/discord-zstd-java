@@ -70,5 +70,5 @@ jobs:
           mkdir -p natives/src/main/resources/natives/linux-x86-64
           cp temp/x64/libzstd.so natives/src/main/resources/natives/linux-x86-64/libzstd.so
 
-      - name: Publish artifact
+      - name: Run tests
         run: ./gradlew test
