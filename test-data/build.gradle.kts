@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly(libs.findbugs)
+    compileOnly(libs.jspecify)
 }
 
 tasks.withType<JavaCompile> {

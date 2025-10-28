@@ -1,12 +1,12 @@
 package dev.freya02.discord.zstd;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public interface ZstdDecompressor {
     void reset();
 
     void close();
 
-    @Nonnull
-    byte[] decompress(@Nonnull byte[] data);
+    byte[] decompress(byte[] data);
 }

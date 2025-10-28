@@ -1,8 +1,8 @@
 [libraries]
-findbugs = "com.google.code.findbugs:jsr305:3.0.2"
 jda = "net.dv8tion:JDA:6.1.0"
 jna = "net.java.dev.jna:jna:5.18.1"
 jreleaser = "org.jreleaser:org.jreleaser.gradle.plugin:1.20.0"
+jspecify = "org.jspecify:jspecify:1.0.0"
 junit = "org.junit.jupiter:junit-jupiter:5.14.0"
 junit-launcher = "org.junit.platform:junit-platform-launcher:1.14.0"
 slf4j = "org.slf4j:slf4j-api:2.0.17"

@@ -1,8 +1,8 @@
 package dev.freya02.discord.zstd;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public interface ZstdDecompressorFactory {
-    @Nonnull
     ZstdDecompressor get(int maxBufferSize);
 }

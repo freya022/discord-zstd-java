@@ -17,7 +17,7 @@ dependencies {
     api(project(":api"))
 
     //Code safety
-    compileOnly(libs.findbugs)
+    compileOnly(libs.jspecify)
 
     //Logger
     implementation(libs.slf4j)

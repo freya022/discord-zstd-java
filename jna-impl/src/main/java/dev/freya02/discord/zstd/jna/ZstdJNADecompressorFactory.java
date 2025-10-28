@@ -3,11 +3,11 @@ package dev.freya02.discord.zstd.jna;
 import dev.freya02.discord.zstd.ZstdDecompressor;
 import dev.freya02.discord.zstd.ZstdDecompressorFactory;
 import dev.freya02.discord.zstd.ZstdNativesLoader;
+import org.jspecify.annotations.NullMarked;
 
-import javax.annotation.Nonnull;
-
+@NullMarked
 public class ZstdJNADecompressorFactory implements ZstdDecompressorFactory {
-    @Nonnull
+
     @Override
     public ZstdDecompressor get(int maxBufferSize) {
         if (!ZstdNativesLoader.isLoaded()) {

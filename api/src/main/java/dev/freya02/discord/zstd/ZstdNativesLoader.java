@@ -1,9 +1,11 @@
 package dev.freya02.discord.zstd;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
+
 import java.io.IOException;
 import java.nio.file.Path;
 
+@NullMarked
 public class ZstdNativesLoader {
     private static boolean init = false;
 
@@ -11,7 +13,7 @@ public class ZstdNativesLoader {
         return init;
     }
 
-    public static synchronized boolean load(@Nonnull Path path) {
+    public static synchronized boolean load(Path path) {
         if (init)
             return false;
 
@@ -48,7 +50,7 @@ public class ZstdNativesLoader {
         return true;
     }
 
-    public static synchronized boolean loadFromJar(@Nonnull String resourcePath) throws IOException {
+    public static synchronized boolean loadFromJar(String resourcePath) throws IOException {
         if (init)
             return false;
 

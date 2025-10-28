@@ -1,6 +1,7 @@
 package dev.freya02.discord.zstd;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
@@ -20,13 +21,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@NullMarked
 public class TestChunks {
 
     public static final Pattern compressedChunkPattern = Pattern.compile("Chunk-\\d+-\\d+\\.bin");
     public static final Pattern decompressedChunkPattern = Pattern.compile("Chunk-\\d+-\\d+\\.decompressed.bin");
 
-    @Nonnull
-    public static List<Chunk> get(@Nonnull Compression compression) {
+    public static List<Chunk> get(Compression compression) {
         final EncryptedTestData encryptedTestData = getEncryptedTestData(compression);
 
         final List<Chunk> decryptedChunks = new ArrayList<>();
@@ -52,8 +53,7 @@ public class TestChunks {
         return decryptedChunks;
     }
 
-    @Nonnull
-    private static EncryptedTestData getEncryptedTestData(@Nonnull Compression compression) {
+    private static EncryptedTestData getEncryptedTestData(Compression compression) {
         Path chunksDirectory = null;
         try {
             chunksDirectory = getChunksDirectory(compression);
@@ -92,20 +92,18 @@ public class TestChunks {
         }
     }
 
-    @Nonnull
-    private static String readEnvOrFile(@Nonnull String varName, @Nonnull Path path) throws IOException {
+    private static String readEnvOrFile(String varName, Path path) throws IOException {
         final String envVar = System.getenv(varName);
         if (envVar != null) return envVar;
 
         return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
     }
 
-    private static boolean isCompressedChunk(@Nonnull Path path) {
+    private static boolean isCompressedChunk(Path path) {
         return compressedChunkPattern.matcher(path.getFileName().toString()).matches();
     }
 
-    @Nonnull
-    private static Path getChunksDirectory(@Nonnull Compression compression) throws URISyntaxException, IOException {
+    private static Path getChunksDirectory(Compression compression) throws URISyntaxException, IOException {
         String resourcePath = compression.getResourcePath();
         URL resource = TestChunks.class.getResource(resourcePath);
         if (resource == null) {
@@ -123,48 +121,43 @@ public class TestChunks {
         ZSTD,
         ;
 
-        @Nonnull
         public String getResourcePath() {
             return "/chunks-" + name().toLowerCase();
         }
 
-        @Nonnull
         public String getKeyEnvVarName() {
             return "TEST_DATA_" + name() + "_KEY";
         }
 
-        @Nonnull
         public String getParametersEnvVarName() {
             return "TEST_DATA_" + name() + "_PARAMETERS";
         }
     }
 
     public static class Chunk {
-        @Nonnull private final byte[] compressed;
-        @Nonnull private final byte[] decompressed;
+        private final byte[] compressed;
+        private final byte[] decompressed;
 
-        private Chunk(@Nonnull byte[] compressed, @Nonnull byte[] decompressed) {
+        private Chunk(byte[] compressed, byte[] decompressed) {
             this.compressed = compressed;
             this.decompressed = decompressed;
         }
 
-        @Nonnull
         public byte[] getCompressed() {
             return compressed;
         }
 
-        @Nonnull
         public byte[] getDecompressed() {
             return decompressed;
         }
     }
 
     private static class EncryptedTestData {
-        @Nonnull private final byte[] key;
-        @Nonnull private final byte[] parameters;
-        @Nonnull private final List<Chunk> chunks;
+        private final byte[] key;
+        private final byte[] parameters;
+        private final List<Chunk> chunks;
 
-        private EncryptedTestData(@Nonnull byte[] key, @Nonnull byte[] parameters, @Nonnull List<Chunk> chunks) {
+        private EncryptedTestData(byte[] key, byte[] parameters, List<Chunk> chunks) {
             this.key = key;
             this.parameters = parameters;
             this.chunks = chunks;

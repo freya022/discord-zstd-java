@@ -3,14 +3,15 @@ package dev.freya02.discord.zstd.jna;
 import com.sun.jna.Pointer;
 import dev.freya02.discord.zstd.AbstractZstdDecompressor;
 import dev.freya02.discord.zstd.ZstdException;
+import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@NullMarked
 public class ZstdJNADecompressor extends AbstractZstdDecompressor {
 
     private static final Logger LOG = LoggerFactory.getLogger(ZstdJNADecompressor.class);
@@ -56,9 +57,8 @@ public class ZstdJNADecompressor extends AbstractZstdDecompressor {
      * the input data can be decompressed (sometimes in multiple rounds due to output buffer size limits)
      * and always return non-null decompressed data
      */
-    @Nonnull
     @Override
-    public byte[] decompress(@Nonnull byte[] data)
+    public byte[] decompress(byte[] data)
     {
         if (shutdown)
             throw new IllegalStateException("Decompressor has shut down");

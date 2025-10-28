@@ -17,7 +17,7 @@ dependencies {
     runtimeOnly(project(":natives"))
 
     //Code safety
-    compileOnly(libs.findbugs)
+    compileOnly(libs.jspecify)
 
     //Logger
     implementation(libs.slf4j)
