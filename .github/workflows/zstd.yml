@@ -68,7 +68,7 @@ jobs:
           fi
 
       - name: Publish Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: zstd-${{ matrix.os }}
           path: output

@@ -33,7 +33,7 @@ jobs:
           
 
       - name: Publish Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: zstd-ubuntu-latest
           path: output
