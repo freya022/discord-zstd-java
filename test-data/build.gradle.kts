@@ -16,3 +16,7 @@ tasks.withType<JavaCompile> {
 
     options.release = 8
 }
+
+tasks.withType<Test> {
+    enabled = false
+}
