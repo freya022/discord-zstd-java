@@ -71,4 +71,7 @@ jobs:
           cp temp/x64/libzstd.so natives/src/main/resources/natives/linux-x86-64/libzstd.so
 
       - name: Run tests
+        env:
+          TEST_DATA_ZSTD_KEY: ${{ secrets.TEST_DATA_ZSTD_KEY }}
+          TEST_DATA_ZSTD_PARAMS: ${{ secrets.TEST_DATA_ZSTD_PARAMS }}
         run: ./gradlew test
