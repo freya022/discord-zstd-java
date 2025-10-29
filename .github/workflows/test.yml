@@ -5,12 +5,12 @@ on:
   workflow_dispatch:
 
 env:
-  COMMON_CMAKE_FLAGS: "-DZSTD_BUILD_PROGRAMS=OFF -DZSTD_LEGACY_SUPPORT=OFF -DZSTD_BUILD_STATIC=OFF -DBUILD_SHARED_LIBS=ON -DZSTD_BUILD_DICTBUILDER=OFF -DZSTD_BUILD_COMPRESSION=OFF"
+  COMMON_CMAKE_FLAGS: "-DZSTD_BUILD_PROGRAMS=OFF -DZSTD_LEGACY_SUPPORT=OFF -DZSTD_BUILD_STATIC=OFF -DBUILD_SHARED_LIBS=ON -DZSTD_BUILD_DICTBUILDER=OFF -DZSTD_BUILD_COMPRESSION=OFF -DCMAKE_BUILD_TYPE=Debug"
 
 jobs:
   build:
     name: Build Zstd
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - name: Clone zstd repo
@@ -23,23 +23,22 @@ jobs:
         shell: bash
         run: |
           cd build/cmake
-          mkdir -p ../../output/x64
-          mkdir build-x64
-          cd build-x64
-          cmake $COMMON_CMAKE_FLAGS ..
-          cmake --build . -j 4
-          cp lib/libzstd.so ../../../output/x64/libzstd.so
+          mkdir build ../../output
+          cd build
+          cmake $COMMON_CMAKE_FLAGS "-DCMAKE_OSX_ARCHITECTURES=arm64;arm64e;x86_64;x86_64h" ..
+          cmake --build . -j 4 --config Release
+          cp lib/libzstd.dylib ../../../output/libzstd.dylib
           cd ..
 
       - name: Publish Artifacts
         uses: actions/upload-artifact@v5
         with:
-          name: zstd-ubuntu-latest
+          name: zstd-macos-latest
           path: output
 
   test:
     name: Test discord-zstd-java
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     needs: [build]
 
     steps:
@@ -61,13 +60,13 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           path: temp
-          pattern: zstd-ubuntu-latest
+          pattern: zstd-macos-latest
           merge-multiple: true
 
       - name: Move Artifacts
         run: |
-          mkdir -p natives/src/main/resources/natives/linux-x86-64
-          cp temp/x64/libzstd.so natives/src/main/resources/natives/linux-x86-64/libzstd.so
+          mkdir -p natives/src/main/resources/natives/darwin
+          cp temp/libzstd.dylib natives/src/main/resources/natives/darwin/libzstd.dylib
 
       - name: Run tests
         env:
