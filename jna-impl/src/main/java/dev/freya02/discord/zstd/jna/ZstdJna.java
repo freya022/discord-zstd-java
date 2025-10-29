@@ -1,7 +1,6 @@
 package dev.freya02.discord.zstd.jna;
 
 import com.sun.jna.Library;
-import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 
@@ -9,7 +8,7 @@ import java.nio.ByteBuffer;
 
 public interface ZstdJna extends Library
 {
-    ZstdJna INSTANCE = Native.load(null, ZstdJna.class);
+    ZstdJna INSTANCE = ZstdJnaHelper.load();
 
     Pointer ZSTD_createDStream();
 

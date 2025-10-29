@@ -17,7 +17,9 @@ public class ZstdNativesLoader {
         if (init)
             return false;
 
-        System.load(path.toAbsolutePath().toString());
+        final String pathStr = path.toAbsolutePath().toString();
+        System.setProperty("zstd.lib", pathStr);
+        System.load(pathStr);
         init = true;
         return true;
     }
