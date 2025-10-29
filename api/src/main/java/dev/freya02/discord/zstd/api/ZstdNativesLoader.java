@@ -17,7 +17,9 @@ public class ZstdNativesLoader {
         if (init)
             return false;
 
-        System.load(path.toAbsolutePath().toString());
+        final String pathStr = path.toAbsolutePath().toString();
+        System.setProperty("zstd.lib", pathStr);
+        System.load(pathStr);
         init = true;
         return true;
     }
@@ -32,19 +34,19 @@ public class ZstdNativesLoader {
         String platform;
         String extension;
         if (osName.startsWith("Linux")) {
-            platform = "linux";
+            platform = "linux-" + architecture;
             extension = "so";
         } else if (osName.startsWith("Mac") || osName.startsWith("Darwin")) {
             platform = "darwin";
             extension = "dylib";
         } else if (osName.startsWith("Windows")) {
-            platform = "win32";
+            platform = "win32-" + architecture;
             extension = "dll";
         } else {
             throw new UnsupportedOperationException("Unsupported OS: " + osName);
         }
 
-        String resourcePath = String.format("/natives/%s-%s/libzstd.%s", platform, architecture, extension);
+        String resourcePath = String.format("/natives/%s/libzstd.%s", platform, extension);
         Path nativePath = NativeUtil.copyNativeFromJar(resourcePath);
         load(nativePath);
         return true;

@@ -2,8 +2,6 @@ name: Test discord-zstd-java
 on:
   pull_request:
   push:
-    branches:
-      - master
 
 env:
   COMMON_CMAKE_FLAGS: "-DZSTD_BUILD_PROGRAMS=OFF -DZSTD_LEGACY_SUPPORT=OFF -DZSTD_BUILD_STATIC=OFF -DBUILD_SHARED_LIBS=ON -DZSTD_BUILD_DICTBUILDER=OFF -DZSTD_BUILD_COMPRESSION=OFF -DCMAKE_BUILD_TYPE=Debug"
@@ -31,7 +29,6 @@ jobs:
           cmake --build . -j 4
           cp lib/libzstd.so ../../../output/x64/libzstd.so
           cd ..
-          
 
       - name: Publish Artifacts
         uses: actions/upload-artifact@v5
@@ -74,7 +71,7 @@ jobs:
       - name: Run tests
         env:
           TEST_DATA_ZSTD_KEY: ${{ secrets.TEST_DATA_ZSTD_KEY }}
-          TEST_DATA_ZSTD_PARAMS: ${{ secrets.TEST_DATA_ZSTD_PARAMS }}
+          TEST_DATA_ZSTD_PARAMETERS: ${{ secrets.TEST_DATA_ZSTD_PARAMETERS }}
         run: ./gradlew test
 
       - name: Upload JUnit XML Test Report
@@ -92,7 +89,7 @@ jobs:
           path: '**/build/reports/tests/test'
           
       - name: Annotate Failed Tests
-        uses: mikepenz/action-junit-report@v6
+        uses: mikepenz/action-junit-report@v6.0.0
         if: ${{ !cancelled() }}
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
