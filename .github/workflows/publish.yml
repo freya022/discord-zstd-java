@@ -116,13 +116,17 @@ jobs:
           cp temp/ARM64/libzstd.dll natives/src/main/resources/natives/win32-aarch64/libzstd.dll
           cp temp/libzstd.dylib natives/src/main/resources/natives/darwin/libzstd.dylib
 
-      - name: Publish to Maven Central
+      - name: Run tests
         env:
           TEST_DATA_ZSTD_KEY: ${{ secrets.TEST_DATA_ZSTD_KEY }}
           TEST_DATA_ZSTD_PARAMETERS: ${{ secrets.TEST_DATA_ZSTD_PARAMETERS }}
+        run: ./gradlew test --no-configuration-cache
+
+      - name: Publish to Maven Central
+        env:
           JRELEASER_MAVENCENTRAL_USERNAME: ${{ secrets.MAVENCENTRAL_USERNAME }}
           JRELEASER_MAVENCENTRAL_TOKEN: ${{ secrets.MAVENCENTRAL_TOKEN }}
           JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
           JRELEASER_GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
           JRELEASER_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: ./gradlew build publish jreleaserDeploy --no-configuration-cache
+        run: ./gradlew publish jreleaserDeploy --no-configuration-cache
