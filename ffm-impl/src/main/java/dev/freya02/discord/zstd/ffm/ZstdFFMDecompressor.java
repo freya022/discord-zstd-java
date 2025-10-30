@@ -22,7 +22,7 @@ public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
     private final MemorySegment outputSegment;
 
     private boolean invalidated = false;
-    private boolean shutdown = false;
+    private boolean closed = false;
 
     public ZstdFFMDecompressor(int maxBufferSize)
     {
@@ -40,8 +40,8 @@ public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
     @Override
     public void reset()
     {
-        if (shutdown)
-            throw new IllegalStateException("Decompressor has shut down");
+        if (closed)
+            throw new IllegalStateException("Decompressor is closed");
 
         Zstd.ZSTD_initDStream(stream);
         invalidated = false;
@@ -50,10 +50,10 @@ public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
     @Override
     public void close()
     {
-        if (shutdown)
+        if (closed)
             return;
 
-        shutdown = true;
+        closed = true;
         Zstd.ZSTD_freeDStream(stream);
         // outputSegment is managed by GC
     }
@@ -66,8 +66,8 @@ public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
     @Override
     public byte[] decompress(byte[] data)
     {
-        if (shutdown)
-            throw new IllegalStateException("Decompressor has shut down");
+        if (closed)
+            throw new IllegalStateException("Decompressor is closed");
         if (invalidated)
             throw new IllegalStateException("Decompressor is in an errored state and needs to be reset");
 

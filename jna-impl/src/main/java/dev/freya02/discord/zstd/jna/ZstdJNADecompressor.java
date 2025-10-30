@@ -20,7 +20,7 @@ public class ZstdJNADecompressor extends AbstractZstdDecompressor {
     private final ZstdJna.ZSTD_outBuffer outputSegment;
 
     private boolean invalidated = false;
-    private boolean shutdown = false;
+    private boolean closed = false;
 
     public ZstdJNADecompressor(int maxBufferSize)
     {
@@ -34,8 +34,8 @@ public class ZstdJNADecompressor extends AbstractZstdDecompressor {
     @Override
     public void reset()
     {
-        if (shutdown)
-            throw new IllegalStateException("Decompressor has shut down");
+        if (closed)
+            throw new IllegalStateException("Decompressor is closed");
 
         ZstdJna.INSTANCE.ZSTD_initDStream(stream);
         invalidated = false;
@@ -44,10 +44,10 @@ public class ZstdJNADecompressor extends AbstractZstdDecompressor {
     @Override
     public void close()
     {
-        if (shutdown)
+        if (closed)
             return;
 
-        shutdown = true;
+        closed = true;
         ZstdJna.INSTANCE.ZSTD_freeDStream(stream);
         // outputSegment is managed by GC
     }
@@ -60,8 +60,8 @@ public class ZstdJNADecompressor extends AbstractZstdDecompressor {
     @Override
     public byte[] decompress(byte[] data)
     {
-        if (shutdown)
-            throw new IllegalStateException("Decompressor has shut down");
+        if (closed)
+            throw new IllegalStateException("Decompressor is closed");
         if (invalidated)
             throw new IllegalStateException("Decompressor is in an errored state and needs to be reset");
 
