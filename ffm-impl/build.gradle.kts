@@ -46,7 +46,7 @@ tasks.withType<Test> {
         isFailOnNoMatchingTests = false
 
         // Only the CI will put the natives in the expected spot
-        if (GitUtils.isGithubActions(providers)) {
+        if (!GitUtils.isGithubActions(providers)) {
             excludeTestsMatching("ZstdFFMTest")
         }
     }
