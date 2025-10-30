@@ -19,11 +19,11 @@ class NativeUtil {
         return arch;
     }
 
-    static Path copyNativeFromJar(String resourcePath) throws IOException {
+    static Path copyNativeFromJar(String resourcePath, Class<?> clazz) throws IOException {
         final Path path = Files.createTempFile("libzstd", null);
         path.toFile().deleteOnExit();
 
-        try (InputStream stream = NativeUtil.class.getResourceAsStream(resourcePath)) {
+        try (InputStream stream = clazz.getResourceAsStream(resourcePath)) {
             if (stream == null)
                 throw new FileNotFoundException("Natives not found at " + resourcePath);
 

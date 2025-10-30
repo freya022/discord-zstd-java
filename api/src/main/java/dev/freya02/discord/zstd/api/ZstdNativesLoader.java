@@ -47,16 +47,16 @@ public class ZstdNativesLoader {
         }
 
         String resourcePath = String.format("/natives/%s/libzstd.%s", platform, extension);
-        Path nativePath = NativeUtil.copyNativeFromJar(resourcePath);
+        Path nativePath = NativeUtil.copyNativeFromJar(resourcePath, ZstdNativesLoader.class);
         load(nativePath);
         return true;
     }
 
-    public static synchronized boolean loadFromJar(String resourcePath) throws IOException {
+    public static synchronized boolean loadFromJar(String resourcePath, Class<?> clazz) throws IOException {
         if (init)
             return false;
 
-        Path nativePath = NativeUtil.copyNativeFromJar(resourcePath);
+        Path nativePath = NativeUtil.copyNativeFromJar(resourcePath, clazz);
         load(nativePath);
         return true;
     }
