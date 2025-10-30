@@ -69,12 +69,16 @@ public class ZstdNativesLoader {
         String platform;
         String extension;
         if (osName.startsWith("Linux")) {
+            if (!architecture.equals("x86-64") && !architecture.equals("aarch64") && !architecture.equals("arm"))
+                throw new IllegalStateException("Unsupported architecture: " + architecture);
             platform = "linux-" + architecture;
             extension = "so";
         } else if (osName.startsWith("Mac") || osName.startsWith("Darwin")) {
             platform = "darwin";
             extension = "dylib";
         } else if (osName.startsWith("Windows")) {
+            if (!architecture.equals("x86-64") && !architecture.equals("aarch64"))
+                throw new IllegalStateException("Unsupported architecture: " + architecture);
             platform = "win32-" + architecture;
             extension = "dll";
         } else {
