@@ -10,6 +10,8 @@ import org.jspecify.annotations.NullMarked;
  */
 @NullMarked
 public interface ZstdDecompressor {
+    int MIN_BUFFER_SIZE = 1024;
+
     void reset();
 
     void close();

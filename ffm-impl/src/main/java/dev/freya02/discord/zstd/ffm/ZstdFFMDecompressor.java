@@ -26,6 +26,9 @@ public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
 
     public ZstdFFMDecompressor(int bufferSize)
     {
+        if (bufferSize < MIN_BUFFER_SIZE)
+            throw new IllegalArgumentException("Buffer must be higher than " + MIN_BUFFER_SIZE + ", provided " + bufferSize);
+
         this.stream = Zstd.ZSTD_createDStream();
 
         final Arena arena = Arena.ofAuto();
@@ -58,7 +61,7 @@ public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
         // outputSegment is managed by GC
     }
 
-    /**
+    /*
      * As each gateway message is a WebSocket message,
      * the input data can be decompressed (sometimes in multiple rounds due to output buffer size limits)
      * and always return non-null decompressed data
@@ -70,6 +73,9 @@ public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
             throw new IllegalStateException("Decompressor is closed");
         if (invalidated)
             throw new IllegalStateException("Decompressor is in an errored state and needs to be reset");
+        //noinspection ConstantValue
+        if (data == null)
+            throw new IllegalArgumentException("data is null");
 
         if (LOG.isTraceEnabled())
             LOG.trace("Decompressing data {}", Arrays.toString(data));
