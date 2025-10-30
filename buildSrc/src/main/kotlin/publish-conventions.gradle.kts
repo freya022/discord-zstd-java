@@ -16,9 +16,7 @@ val versionObj = Version(
 
 group = "dev.freya02"
 version = if (GitUtils.isGithubActions(providers)) {
-    val commitHash = System.getenv("GITHUB_SHA")
-        ?: error("Attempted to publish but no Git commit hash could be found")
-    "${versionObj}_$commitHash"
+    versionObj.toString()
 } else {
     "${versionObj}_DEV"
 }
