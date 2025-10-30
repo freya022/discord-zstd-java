@@ -2,6 +2,11 @@
 
 Modular support for Zstandard streaming decompression, for JVM Discord API wrappers.
 
+## Supported platforms
+- Linux: x86-64, aarch64, armhf
+- Windows: x86-64, aarch64
+- macOS (darwin): x86-64, aarch64
+
 ## 🤖 For bot developers
 
 ### Installation
