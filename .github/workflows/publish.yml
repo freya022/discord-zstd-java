@@ -1,6 +1,6 @@
 # Modified from https://github.com/DSharpPlus/DSharpPlus.Natives/blob/f4391784d99fb2cd0c5e37122b4aa65ec04420ba/.github/workflows/zstd.yml
 
-name: Build Zstd
+name: Publish discord-zstd-java
 on:
   workflow_dispatch:
 
