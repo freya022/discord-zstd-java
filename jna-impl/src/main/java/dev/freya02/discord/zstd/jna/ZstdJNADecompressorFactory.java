@@ -9,10 +9,10 @@ import org.jspecify.annotations.NullMarked;
 public class ZstdJNADecompressorFactory implements ZstdDecompressorFactory {
 
     @Override
-    public ZstdDecompressor get(int maxBufferSize) {
+    public ZstdDecompressor get(int bufferSize) {
         if (!ZstdNativesLoader.isLoaded()) {
             throw new IllegalStateException("Natives are not loaded yet, see ZstdNativesLoader");
         }
-        return new ZstdJNADecompressor(maxBufferSize);
+        return new ZstdJNADecompressor(bufferSize);
     }
 }

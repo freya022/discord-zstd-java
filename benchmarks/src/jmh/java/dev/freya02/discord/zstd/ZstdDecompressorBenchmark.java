@@ -21,7 +21,7 @@ import java.util.zip.DataFormatException;
 @Fork(1)
 public class ZstdDecompressorBenchmark {
 
-    private static final int MAX_BUFFER_SIZE = 2048;
+    private static final int BUFFER_SIZE = 2048;
 
     @State(Scope.Benchmark)
     public static class ZstdDecompressorState {
@@ -38,7 +38,7 @@ public class ZstdDecompressorBenchmark {
                 case "jna" -> new ZstdJNADecompressorFactory();
                 default -> throw new AssertionError("Unknown implementation: " + impl);
             };
-            decompressor = factory.get(MAX_BUFFER_SIZE);
+            decompressor = factory.get(BUFFER_SIZE);
         }
     }
 
@@ -70,7 +70,7 @@ public class ZstdDecompressorBenchmark {
 
         @Setup
         public void setup() {
-            decompressor = new ZlibDecompressor(MAX_BUFFER_SIZE);
+            decompressor = new ZlibDecompressor(BUFFER_SIZE);
         }
     }
 

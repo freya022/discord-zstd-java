@@ -24,14 +24,14 @@ public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
     private boolean invalidated = false;
     private boolean closed = false;
 
-    public ZstdFFMDecompressor(int maxBufferSize)
+    public ZstdFFMDecompressor(int bufferSize)
     {
         this.stream = Zstd.ZSTD_createDStream();
 
         final Arena arena = Arena.ofAuto();
         outputSegment = ZSTD_outBuffer.allocate(arena);
-        ZSTD_outBuffer.dst(outputSegment, arena.allocate(maxBufferSize));
-        ZSTD_outBuffer.size(outputSegment, maxBufferSize);
+        ZSTD_outBuffer.dst(outputSegment, arena.allocate(bufferSize));
+        ZSTD_outBuffer.size(outputSegment, bufferSize);
         ZSTD_outBuffer.pos(outputSegment, 0);
 
         reset();

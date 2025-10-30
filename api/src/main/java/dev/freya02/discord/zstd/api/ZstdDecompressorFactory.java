@@ -4,5 +4,5 @@ import org.jspecify.annotations.NullMarked;
 
 @NullMarked
 public interface ZstdDecompressorFactory {
-    ZstdDecompressor get(int maxBufferSize);
+    ZstdDecompressor get(int bufferSize);
 }

@@ -22,11 +22,11 @@ public class ZstdJNADecompressor extends AbstractZstdDecompressor {
     private boolean invalidated = false;
     private boolean closed = false;
 
-    public ZstdJNADecompressor(int maxBufferSize)
+    public ZstdJNADecompressor(int bufferSize)
     {
         this.stream = ZstdJna.INSTANCE.ZSTD_createDStream();
 
-        outputSegment = new ZstdJna.ZSTD_outBuffer(maxBufferSize);
+        outputSegment = new ZstdJna.ZSTD_outBuffer(bufferSize);
 
         reset();
     }
