@@ -63,7 +63,7 @@ you can do so by calling `ZstdNativesLoader.load(Path)` or `loadFromJar(String)`
 ## 📖 For library developers
 ### Installation
 
-You will only need the `dev.freya02:discord-zstd-java-api:VERSION` dependency.
+You will only need the `dev.freya02:discord-zstd-java-api:VERSION` dependency, it is compatible with Java 8+.
 
 ### Usage
 
