@@ -1,3 +1,10 @@
+[api-maven-central-shield]: https://img.shields.io/maven-central/v/dev.freya02/discord-zstd-java-api?label=Maven%20central&logo=apachemaven
+[api-maven-central-link]: https://central.sonatype.com/artifact/dev.freya02/discord-zstd-java-api
+[ffm-impl-maven-central-shield]: https://img.shields.io/maven-central/v/dev.freya02/discord-zstd-java-ffm-impl?label=Maven%20central&logo=apachemaven
+[ffm-impl-maven-central-link]: https://central.sonatype.com/artifact/dev.freya02/discord-zstd-java-ffm-impl
+[jna-impl-maven-central-shield]: https://img.shields.io/maven-central/v/dev.freya02/discord-zstd-java-jna-impl?label=Maven%20central&logo=apachemaven
+[jna-impl-maven-central-link]: https://central.sonatype.com/artifact/dev.freya02/discord-zstd-java-jna-impl
+
 # discord-zstd-java
 
 Modular support for Zstandard streaming decompression, for JVM Discord API wrappers.
@@ -14,6 +21,8 @@ Modular support for Zstandard streaming decompression, for JVM Discord API wrapp
 You're likely here if you want to use Zstd decompression for your Discord bot! You can choose between two different implementations:
 
 #### For Java 22+ (Recommended)
+
+[![discord-zstd-java-ffm-impl on Maven Central][ffm-impl-maven-central-shield] ][ffm-impl-maven-central-link]
 
 For improved performance, you can use this implementation based on the [Foreign Function & Memory API](https://openjdk.org/jeps/454).
 
@@ -35,6 +44,9 @@ dependencies {
 ```
 
 #### For Java 8+
+
+[![discord-zstd-java-jna-impl on Maven Central][jna-impl-maven-central-shield] ][jna-impl-maven-central-link]
+
 For maximum compatibility, you can use this implementation based on [JNA](https://github.com/java-native-access/jna).
 
 ##### Gradle
@@ -62,6 +74,8 @@ you can do so by calling `ZstdNativesLoader.load(Path)` or `loadFromJar(String)`
 
 ## 📖 For library developers
 ### Installation
+
+[![discord-zstd-java-api on Maven Central][api-maven-central-shield] ][api-maven-central-link]
 
 You will only need the `dev.freya02:discord-zstd-java-api:VERSION` dependency, it is compatible with Java 8+.
 
