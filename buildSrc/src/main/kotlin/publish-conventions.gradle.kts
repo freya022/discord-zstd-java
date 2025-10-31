@@ -1,5 +1,4 @@
 import org.jreleaser.model.Active
-import org.jreleaser.model.api.deploy.maven.MavenCentralMavenDeployer
 
 plugins {
     `maven-publish`
@@ -51,7 +50,6 @@ jreleaser {
             mavenCentral {
                 register("sonatype") {
                     active = Active.RELEASE
-                    stage = MavenCentralMavenDeployer.Stage.UPLOAD
                     url = "https://central.sonatype.com/api/v1/publisher"
                     stagingRepository(stagingDirectory.asFile.absolutePath)
                 }
