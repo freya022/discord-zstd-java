@@ -53,7 +53,7 @@ jreleaser {
                     active = Active.RELEASE
                     stage = MavenCentralMavenDeployer.Stage.UPLOAD
                     url = "https://central.sonatype.com/api/v1/publisher"
-                    stagingRepository(stagingDirectory.asFile.relativeTo(projectDir).path)
+                    stagingRepository(stagingDirectory.asFile.absolutePath)
                 }
             }
         }
