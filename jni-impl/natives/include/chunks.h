@@ -5,7 +5,9 @@
 #include <vector>
 #include <zstd.h>
 
+using Chunks = std::vector<std::vector<jbyte> >;
+
 jbyteArray mergeChunks(
-    JNIEnv *env, const std::vector<std::vector<jbyte> > &chunks, const ZSTD_outBuffer &finalChunk);
+    JNIEnv *env, const Chunks &chunks, const ZSTD_outBuffer &finalChunk);
 
 #endif

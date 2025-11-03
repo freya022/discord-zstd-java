@@ -35,7 +35,7 @@ jbyteArray Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_decompressMessa
     input.size = env->GetArrayLength(inputArray);
     input.pos = 0;
 
-    std::vector<std::vector<jbyte>> chunks;
+    Chunks chunks;
 
     while (true) {
         // In cases where the output buffer is too small for the decompressed input,
