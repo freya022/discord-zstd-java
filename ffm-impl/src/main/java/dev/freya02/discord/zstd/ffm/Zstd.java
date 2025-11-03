@@ -281,6 +281,16 @@ public final class Zstd {
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
 
+    private static class ZSTD_DStreamOutSize {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+                C_LONG_LONG
+        );
+
+        public static final MemorySegment ADDR = Zstd.findOrThrow("ZSTD_DStreamOutSize");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
     /**
      *  Streaming decompression function.
      *
@@ -327,6 +337,18 @@ public final class Zstd {
             return (long)mh$.invokeExact(zds, output, input);
         } catch (Throwable ex$) {
            throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    public static long ZSTD_DStreamOutSize() {
+        var mh$ = ZSTD_DStreamOutSize.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("ZSTD_DStreamOutSize");
+            }
+            return (long)mh$.invokeExact();
+        } catch (Throwable ex$) {
+            throw new AssertionError("should not reach here", ex$);
         }
     }
 }

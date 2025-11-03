@@ -26,7 +26,7 @@ public class ZstdFFMTest {
         assertTrue(ZstdNativesLoader.loadFromJar());
 
         ZstdFFMDecompressorFactory factory = new ZstdFFMDecompressorFactory();
-        ZstdDecompressor decompressor = factory.get(2048);
+        ZstdDecompressor decompressor = factory.get(ZstdDecompressor.DEFAULT_BUFFER_SIZE);
         for (TestChunks.Chunk chunk : chunks) {
             final byte[] actual = decompressor.decompress(chunk.getCompressed());
             final byte[] expected = chunk.getDecompressed();

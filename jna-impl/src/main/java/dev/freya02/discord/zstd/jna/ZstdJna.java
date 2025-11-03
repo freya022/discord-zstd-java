@@ -14,6 +14,8 @@ public interface ZstdJna extends Library
 
     long ZSTD_freeDStream(Pointer zds);
 
+    long ZSTD_DStreamOutSize();
+
     long ZSTD_initDStream(Pointer zds);
 
     long ZSTD_decompressStream(Pointer zds, ZSTD_outBuffer output, ZSTD_inBuffer input);
