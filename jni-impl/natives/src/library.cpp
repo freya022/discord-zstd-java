@@ -7,7 +7,7 @@
 
 jlong Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_createDStream(
     JNIEnv *, jclass) {
-    return reinterpret_cast<intptr_t>(ZSTD_createDStream());
+    return reinterpret_cast<jlong>(ZSTD_createDStream());
 }
 
 jlong Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_freeDStream(
