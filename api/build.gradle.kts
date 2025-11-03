@@ -14,8 +14,6 @@ repositories {
 }
 
 dependencies {
-    runtimeOnly(project(":natives"))
-
     //Code safety
     compileOnly(libs.jspecify)
 
