@@ -1,10 +1,8 @@
-#include "library.h"
-
+#include <chunks.h>
 #include <cstring>
+#include <library.h>
 #include <vector>
-
-#include "chunks.h"
-#include "zstd.h"
+#include <zstd.h>
 
 jlong Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_createDStream(
     JNIEnv *, jclass) {
@@ -45,9 +43,9 @@ jbyteArray Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_decompressMessa
         // we'll loop back, so, reset the output position
         output.pos = 0;
 
-        const size_t previousInputOffset = input.pos;
+        const std::size_t previousInputOffset = input.pos;
 
-        const size_t result = ZSTD_decompressStream(reinterpret_cast<ZSTD_DStream *>(zds), &output, &input);
+        const std::size_t result = ZSTD_decompressStream(reinterpret_cast<ZSTD_DStream *>(zds), &output, &input);
 
         const bool madeForwardProgress = input.pos > previousInputOffset || output.pos > 0;
         const bool fullyProcessedInput = input.pos == input.size;

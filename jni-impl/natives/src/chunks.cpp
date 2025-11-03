@@ -1,7 +1,7 @@
-#include "chunks.h"
+#include <chunks.h>
 
-size_t getTotalDataLength(const std::vector<const std::vector<jbyte> *> &chunks, const ZSTD_outBuffer &finalChunk) {
-    size_t length = 0;
+std::size_t getTotalDataLength(const std::vector<const std::vector<jbyte> *> &chunks, const ZSTD_outBuffer &finalChunk) {
+    std::size_t length = 0;
     length += finalChunk.pos;
     for (const auto &chunk: chunks) {
         length += chunk->size();
@@ -11,7 +11,7 @@ size_t getTotalDataLength(const std::vector<const std::vector<jbyte> *> &chunks,
 
 jbyteArray mergeChunks(
     JNIEnv *env, const std::vector<const std::vector<jbyte> *> &chunks, const ZSTD_outBuffer &finalChunk) {
-    const size_t length = getTotalDataLength(chunks, finalChunk);
+    const std::size_t length = getTotalDataLength(chunks, finalChunk);
 
     jbyteArray finalOutput = env->NewByteArray(static_cast<jsize>(length));
     jsize offset = 0;

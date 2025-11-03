@@ -1,7 +1,7 @@
 #ifndef NATIVES_LIBRARY_H
 #define NATIVES_LIBRARY_H
 
-#include "jni.h"
+#include <jni.h>
 
 extern "C" {
 JNIEXPORT jlong JNICALL Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_createDStream(
