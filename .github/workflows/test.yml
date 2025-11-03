@@ -4,10 +4,11 @@ on:
   push:
 
 env:
-  COMMON_CMAKE_FLAGS: "-DZSTD_BUILD_PROGRAMS=OFF -DZSTD_LEGACY_SUPPORT=OFF -DZSTD_BUILD_STATIC=OFF -DBUILD_SHARED_LIBS=ON -DZSTD_BUILD_DICTBUILDER=OFF -DZSTD_BUILD_COMPRESSION=OFF -DCMAKE_BUILD_TYPE=Debug"
+  COMMON_ZSTD_CMAKE_FLAGS: "-DZSTD_BUILD_PROGRAMS=OFF -DZSTD_LEGACY_SUPPORT=OFF -DZSTD_BUILD_STATIC=OFF -DBUILD_SHARED_LIBS=ON -DZSTD_BUILD_DICTBUILDER=OFF -DZSTD_BUILD_COMPRESSION=OFF -DCMAKE_BUILD_TYPE=Debug"
+  COMMON_JNI_NATIVES_CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=Debug"
 
 jobs:
-  build:
+  build-zstd:
     name: Build Zstd
     runs-on: ubuntu-latest
 
@@ -25,7 +26,7 @@ jobs:
           mkdir -p ../../output/x64
           mkdir build-x64
           cd build-x64
-          cmake $COMMON_CMAKE_FLAGS ..
+          cmake $COMMON_ZSTD_CMAKE_FLAGS ..
           cmake --build . -j 4
           cp lib/libzstd.so ../../../output/x64/libzstd.so
           cd ..
@@ -36,10 +37,36 @@ jobs:
           name: zstd-ubuntu-latest
           path: output
 
+  build-jni-natives:
+    name: Build Zstd JNI natives
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v5
+
+      - name: Build discord-zstd-java-jni/natives
+        shell: bash
+        run: |
+          mkdir -p output/x64
+          cd jni-impl/natives
+          mkdir build-x64
+          cd build-x64
+          cmake $COMMON_JNI_NATIVES_CMAKE_FLAGS ..
+          cmake --build . -j 4
+          cp natives.so ../../../output/x64/libzstd.so
+          cd ..
+
+      - name: Publish Artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: jni-natives-ubuntu-latest
+          path: output
+
   test:
     name: Test discord-zstd-java
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [build-zstd, build-jni-natives]
 
     steps:
       - name: Clone repo
@@ -59,14 +86,23 @@ jobs:
       - name: Download Artifacts
         uses: actions/download-artifact@v5
         with:
-          path: temp
+          path: temp-zstd
           pattern: zstd-ubuntu-latest
+          merge-multiple: true
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: temp-jni-natives
+          pattern: jni-natives-ubuntu-latest
           merge-multiple: true
 
       - name: Move Artifacts
         run: |
           mkdir -p natives/src/main/resources/natives/linux-x86-64
-          cp temp/x64/libzstd.so natives/src/main/resources/natives/linux-x86-64/libzstd.so
+          mkdir -p jni-impl/src/main/resources/natives/linux-x86-64
+          cp temp-zstd/x64/libzstd.so natives/src/main/resources/natives/linux-x86-64/libzstd.so
+          cp temp-jni-natives/x64/libzstd.so jni-impl/src/main/resources/natives/linux-x86-64/libzstd.so
 
       - name: Run tests
         env:
