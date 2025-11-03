@@ -1,6 +1,7 @@
 #include "library.h"
 
 #include <vector>
+#include <cstring>
 
 #include "chunks.h"
 #include "zstd.h"
