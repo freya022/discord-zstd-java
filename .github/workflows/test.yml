@@ -54,7 +54,7 @@ jobs:
           cd build-x64
           cmake $COMMON_JNI_NATIVES_CMAKE_FLAGS ..
           cmake --build . -j 4
-          cp natives.so ../../../output/x64/libzstd.so
+          cp libzstd-jni.so ../../../output/x64/libzstd.so
           cd ..
 
       - name: Publish Artifacts
