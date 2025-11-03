@@ -12,6 +12,9 @@ set_target_properties(
 
 include_directories(include)
 
+find_package(JNI REQUIRED)
+include_directories(${JNI_INCLUDE_DIRS})
+
 include(FetchContent)
 
 set(ZSTD_BUILD_STATIC ON)
