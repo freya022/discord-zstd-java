@@ -1,9 +1,14 @@
 cmake_minimum_required(VERSION 3.25)
-project(natives CXX)
+project(libzstd-jni CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(natives SHARED src/library.cpp src/chunks.cpp)
+add_library(libzstd-jni SHARED src/library.cpp src/chunks.cpp)
+
+set_target_properties(
+        libzstd-jni
+        PROPERTIES
+        LIBRARY_OUTPUT_NAME zstd-jni)
 
 include_directories(include)
 
