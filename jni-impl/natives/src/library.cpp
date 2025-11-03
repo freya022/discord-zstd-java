@@ -1,5 +1,4 @@
 #include <chunks.h>
-#include <cstring>
 #include <library.h>
 #include <vector>
 #include <zstd.h>
@@ -36,7 +35,7 @@ jbyteArray Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_decompressMessa
     input.size = env->GetArrayLength(inputArray);
     input.pos = 0;
 
-    std::vector<const std::vector<jbyte> *> chunks;
+    std::vector<std::vector<jbyte>> chunks;
 
     while (true) {
         // In cases where the output buffer is too small for the decompressed input,
@@ -69,9 +68,13 @@ jbyteArray Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_decompressMessa
             return nullptr;
         } else {
             // Copy our output
-            auto *chunk = new std::vector<jbyte>(output.pos);
-            memcpy(chunk->data(), output.dst, output.pos);
-            chunks.push_back(chunk);
+            const auto outputBytes = static_cast<jbyte *>(output.dst);
+            // Same as:
+            // auto chunk = std::vector(outputBytes, outputBytes + output.pos)
+            // chunks.push_back(std::move(chunk))
+            // Also same as:
+            // chunks.push_back(std::vector(outputBytes, outputBytes + output.pos))
+            chunks.emplace_back(outputBytes, outputBytes + output.pos);
         }
     }
 }

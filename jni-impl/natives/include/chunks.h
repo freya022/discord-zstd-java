@@ -6,6 +6,6 @@
 #include <zstd.h>
 
 jbyteArray mergeChunks(
-    JNIEnv *env, const std::vector<const std::vector<jbyte> *> &chunks, const ZSTD_outBuffer &finalChunk);
+    JNIEnv *env, const std::vector<std::vector<jbyte> > &chunks, const ZSTD_outBuffer &finalChunk);
 
 #endif
