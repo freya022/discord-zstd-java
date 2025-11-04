@@ -5,6 +5,10 @@ import dev.freya02.discord.zstd.api.ZstdDecompressor;
 import java.util.List;
 
 public abstract class AbstractZstdDecompressor implements ZstdDecompressor {
+
+    protected AbstractZstdDecompressor() {
+    }
+
     protected static byte[] mergeChunks(List<byte[]> chunks, byte[] bytes) {
         int totalLength = 0;
         totalLength += bytes.length;

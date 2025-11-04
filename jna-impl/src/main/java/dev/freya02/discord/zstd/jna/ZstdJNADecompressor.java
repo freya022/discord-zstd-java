@@ -22,7 +22,7 @@ public class ZstdJNADecompressor extends AbstractZstdDecompressor {
     private boolean invalidated = false;
     private boolean closed = false;
 
-    public ZstdJNADecompressor(int bufferSize)
+    protected ZstdJNADecompressor(int bufferSize)
     {
         if (bufferSize < MIN_BUFFER_SIZE && bufferSize != DEFAULT_BUFFER_SIZE)
             throw new IllegalArgumentException("Buffer must be higher than or equal to " + MIN_BUFFER_SIZE + ", provided " + bufferSize);

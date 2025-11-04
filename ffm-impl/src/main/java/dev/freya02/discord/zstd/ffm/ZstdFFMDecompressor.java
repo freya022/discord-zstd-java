@@ -24,7 +24,7 @@ public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
     private boolean invalidated = false;
     private boolean closed = false;
 
-    public ZstdFFMDecompressor(int bufferSize)
+    protected ZstdFFMDecompressor(int bufferSize)
     {
         if (bufferSize < MIN_BUFFER_SIZE && bufferSize != DEFAULT_BUFFER_SIZE)
             throw new IllegalArgumentException("Buffer must be higher than or equal to " + MIN_BUFFER_SIZE + ", provided " + bufferSize);
