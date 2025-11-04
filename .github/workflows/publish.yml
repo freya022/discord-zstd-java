@@ -5,18 +5,18 @@ on:
   workflow_dispatch:
 
 env:
-  COMMON_CMAKE_FLAGS: "-DZSTD_BUILD_PROGRAMS=OFF -DZSTD_LEGACY_SUPPORT=OFF -DZSTD_BUILD_STATIC=OFF -DBUILD_SHARED_LIBS=ON -DZSTD_BUILD_DICTBUILDER=OFF -DZSTD_BUILD_COMPRESSION=OFF -DCMAKE_BUILD_TYPE=Release"
+  COMMON_ZSTD_CMAKE_FLAGS: "-DZSTD_BUILD_PROGRAMS=OFF -DZSTD_LEGACY_SUPPORT=OFF -DZSTD_BUILD_STATIC=OFF -DBUILD_SHARED_LIBS=ON -DZSTD_BUILD_DICTBUILDER=OFF -DZSTD_BUILD_COMPRESSION=OFF -DCMAKE_BUILD_TYPE=Release"
+  COMMON_JNI_NATIVES_CMAKE_FLAGS: "-DCMAKE_BUILD_TYPE=Release"
 
 concurrency:
   group: "publish"
 
 jobs:
-  build:
+  build-zstd:
     name: Build Zstd
     runs-on: ${{ matrix.os }}
 
     strategy:
-      fail-fast: false # Run the other two OSs even if one fails
       matrix:
         os: [ windows-latest, ubuntu-latest, macos-latest ]
 
@@ -36,7 +36,7 @@ jobs:
               mkdir -p ../../output/$arch
               mkdir build-$arch
               cd build-$arch
-              cmake $COMMON_CMAKE_FLAGS -A $arch ..
+              cmake $COMMON_ZSTD_CMAKE_FLAGS -A $arch ..
               cmake --build . -j 4 --config Release
               cp lib/Release/zstd.dll ../../../output/$arch/libzstd.dll
               cd ..
@@ -49,13 +49,13 @@ jobs:
               if [[ "$arch" == "ARM64" ]]; then
                 sudo apt update
                 sudo apt install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
-                cmake $COMMON_CMAKE_FLAGS -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ ..
+                cmake $COMMON_ZSTD_CMAKE_FLAGS -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ ..
               elif [[ "$arch" == "ARM" ]]; then
                 sudo apt update
                 sudo apt install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
-                cmake $COMMON_CMAKE_FLAGS -DCMAKE_C_COMPILER=arm-linux-gnueabihf-gcc -DCMAKE_CXX_COMPILER=arm-linux-gnueabihf-g++ ..
+                cmake $COMMON_ZSTD_CMAKE_FLAGS -DCMAKE_C_COMPILER=arm-linux-gnueabihf-gcc -DCMAKE_CXX_COMPILER=arm-linux-gnueabihf-g++ ..
               else
-                cmake $COMMON_CMAKE_FLAGS ..
+                cmake $COMMON_ZSTD_CMAKE_FLAGS ..
               fi
               cmake --build . -j 4
               cp lib/libzstd.so ../../../output/$arch/libzstd.so
@@ -64,7 +64,7 @@ jobs:
           elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
             mkdir build ../../output
             cd build
-            cmake $COMMON_CMAKE_FLAGS "-DCMAKE_OSX_ARCHITECTURES=arm64;arm64e;x86_64;x86_64h" ..
+            cmake $COMMON_ZSTD_CMAKE_FLAGS "-DCMAKE_OSX_ARCHITECTURES=arm64;arm64e;x86_64;x86_64h" ..
             cmake --build . -j 4 --config Release
             cp lib/libzstd.dylib ../../../output/libzstd.dylib
             cd ..
@@ -76,9 +76,69 @@ jobs:
           name: zstd-${{ matrix.os }}
           path: output
 
+  build-jni-natives:
+    name: Build Zstd JNI natives
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v5
+
+      - name: Build discord-zstd-java-jni/natives
+        shell: bash
+        run: |
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            for arch in x64 ARM64; do # We dont want Win32
+              mkdir -p output/$arch
+              mkdir jni-impl/natives/build-$arch
+              cd jni-impl/natives/build-$arch
+              cmake $COMMON_JNI_NATIVES_CMAKE_FLAGS -A $arch ..
+              cmake --build . -j 4 --config Release
+              cp Release/zstd.dll ../../../output/$arch/libzstd.dll
+              cd ..
+            done
+          elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+            for arch in x64 ARM ARM64; do
+              mkdir -p output/$arch
+              mkdir jni-impl/natives/build-$arch
+              cd jni-impl/natives/build-$arch
+              if [[ "$arch" == "ARM64" ]]; then
+                sudo apt update
+                sudo apt install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+                cmake $COMMON_JNI_NATIVES_CMAKE_FLAGS -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ ..
+              elif [[ "$arch" == "ARM" ]]; then
+                sudo apt update
+                sudo apt install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
+                cmake $COMMON_JNI_NATIVES_CMAKE_FLAGS -DCMAKE_C_COMPILER=arm-linux-gnueabihf-gcc -DCMAKE_CXX_COMPILER=arm-linux-gnueabihf-g++ ..
+              else
+                cmake $COMMON_JNI_NATIVES_CMAKE_FLAGS ..
+              fi
+              cmake --build . -j 4
+              cp libzstd-jni.so ../../../output/$arch/libzstd.so
+              cd ..
+            done
+          elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+            mkdir build output
+            cd build
+            cmake $COMMON_JNI_NATIVES_CMAKE_FLAGS "-DCMAKE_OSX_ARCHITECTURES=arm64;arm64e;x86_64;x86_64h" ..
+            cmake --build . -j 4 --config Release
+            cp libzstd-jni.dylib ../output/libzstd.dylib
+            cd ..
+          fi
+
+      - name: Publish Artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: jni-natives-ubuntu-latest
+          path: output
+
   publish:
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [build-zstd, build-jni-natives]
     steps:
       - name: Clone repo
         uses: actions/checkout@v5
@@ -97,8 +157,15 @@ jobs:
       - name: Download Artifacts
         uses: actions/download-artifact@v5
         with:
-          path: temp
+          path: temp-zstd
           pattern: zstd-*
+          merge-multiple: true
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: temp-jni-natives
+          pattern: jni-natives-ubuntu-latest
           merge-multiple: true
 
       - name: Move Artifacts
@@ -109,12 +176,24 @@ jobs:
           mkdir -p natives/src/main/resources/natives/win32-x86-64
           mkdir -p natives/src/main/resources/natives/win32-aarch64
           mkdir -p natives/src/main/resources/natives/darwin
-          cp temp/x64/libzstd.so natives/src/main/resources/natives/linux-x86-64/libzstd.so
-          cp temp/ARM64/libzstd.so natives/src/main/resources/natives/linux-aarch64/libzstd.so
-          cp temp/ARM/libzstd.so natives/src/main/resources/natives/linux-arm/libzstd.so
-          cp temp/x64/libzstd.dll natives/src/main/resources/natives/win32-x86-64/libzstd.dll
-          cp temp/ARM64/libzstd.dll natives/src/main/resources/natives/win32-aarch64/libzstd.dll
-          cp temp/libzstd.dylib natives/src/main/resources/natives/darwin/libzstd.dylib
+          cp temp-zstd/x64/libzstd.so natives/src/main/resources/natives/linux-x86-64/libzstd.so
+          cp temp-zstd/ARM64/libzstd.so natives/src/main/resources/natives/linux-aarch64/libzstd.so
+          cp temp-zstd/ARM/libzstd.so natives/src/main/resources/natives/linux-arm/libzstd.so
+          cp temp-zstd/x64/libzstd.dll natives/src/main/resources/natives/win32-x86-64/libzstd.dll
+          cp temp-zstd/ARM64/libzstd.dll natives/src/main/resources/natives/win32-aarch64/libzstd.dll
+          cp temp-zstd/libzstd.dylib natives/src/main/resources/natives/darwin/libzstd.dylib
+          mkdir -p jni-impl/src/main/resources/natives/linux-x86-64
+          mkdir -p jni-impl/src/main/resources/natives/linux-aarch64
+          mkdir -p jni-impl/src/main/resources/natives/linux-arm
+          mkdir -p jni-impl/src/main/resources/natives/win32-x86-64
+          mkdir -p jni-impl/src/main/resources/natives/win32-aarch64
+          mkdir -p jni-impl/src/main/resources/natives/darwin
+          cp temp-jni-natives/x64/libzstd.so jni-impl/src/main/resources/natives/linux-x86-64/libzstd.so
+          cp temp-jni-natives/ARM64/libzstd.so jni-impl/src/main/resources/natives/linux-aarch64/libzstd.so
+          cp temp-jni-natives/ARM/libzstd.so jni-impl/src/main/resources/natives/linux-arm/libzstd.so
+          cp temp-jni-natives/x64/libzstd.dll jni-impl/src/main/resources/natives/win32-x86-64/libzstd.dll
+          cp temp-jni-natives/ARM64/libzstd.dll jni-impl/src/main/resources/natives/win32-aarch64/libzstd.dll
+          cp temp-jni-natives/libzstd.dylib jni-impl/src/main/resources/natives/darwin/libzstd.dylib
 
       - name: Run tests
         env:
