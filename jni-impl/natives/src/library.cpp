@@ -1,5 +1,5 @@
-#include <chunks.h>
-#include <library.h>
+#include <chunks.hpp>
+#include <library.hpp>
 #include <vector>
 #include <zstd.h>
 

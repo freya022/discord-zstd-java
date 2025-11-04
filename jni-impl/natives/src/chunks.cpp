@@ -1,4 +1,4 @@
-#include <chunks.h>
+#include <chunks.hpp>
 
 std::size_t getTotalDataLength(const Chunks &chunks, const ZSTD_outBuffer &finalChunk) {
     std::size_t length = 0;
