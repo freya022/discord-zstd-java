@@ -5,6 +5,7 @@ import dev.freya02.discord.zstd.api.ZstdDecompressorFactory;
 import dev.freya02.discord.zstd.api.ZstdNativesLoader;
 import dev.freya02.discord.zstd.ffm.ZstdFFMDecompressorFactory;
 import dev.freya02.discord.zstd.jna.ZstdJNADecompressorFactory;
+import dev.freya02.discord.zstd.jni.ZstdJNIDecompressorFactory;
 import net.dv8tion.jda.internal.utils.compress.ZlibDecompressor;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
@@ -26,7 +27,7 @@ public class ZstdDecompressorBenchmark {
 
     @State(Scope.Benchmark)
     public static class ZstdDecompressorState {
-        @Param({"ffm", "jna"})
+        @Param({"ffm", "jna", "jni"})
         private String impl;
 
         public ZstdDecompressor decompressor;
@@ -37,6 +38,7 @@ public class ZstdDecompressorBenchmark {
             ZstdDecompressorFactory factory = switch (impl) {
                 case "ffm" -> new ZstdFFMDecompressorFactory();
                 case "jna" -> new ZstdJNADecompressorFactory();
+                case "jni" -> new ZstdJNIDecompressorFactory();
                 default -> throw new AssertionError("Unknown implementation: " + impl);
             };
             decompressor = factory.get(ZSTD_BUFFER_SIZE);
