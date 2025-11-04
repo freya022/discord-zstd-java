@@ -43,6 +43,11 @@ public class ZstdDecompressorBenchmark {
             };
             decompressor = factory.get(ZSTD_BUFFER_SIZE);
         }
+
+        @TearDown
+        public void tearDown() {
+            decompressor.close();
+        }
     }
 
     @State(Scope.Benchmark)
