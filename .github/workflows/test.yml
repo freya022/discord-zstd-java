@@ -85,14 +85,14 @@ jobs:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       - name: Download Artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           path: temp-zstd
           pattern: zstd-ubuntu-latest
           merge-multiple: true
 
       - name: Download Artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           path: temp-jni-natives
           pattern: jni-natives-ubuntu-latest

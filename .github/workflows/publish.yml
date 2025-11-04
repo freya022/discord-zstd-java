@@ -155,14 +155,14 @@ jobs:
           cache-disabled: true
 
       - name: Download Artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           path: temp-zstd
           pattern: zstd-*
           merge-multiple: true
 
       - name: Download Artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           path: temp-jni-natives
           pattern: jni-natives-*
