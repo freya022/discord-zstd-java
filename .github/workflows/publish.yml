@@ -122,11 +122,11 @@ jobs:
               cd ..
             done
           elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-            mkdir build output
-            cd build
+            mkdir jni-impl/natives/build output
+            cd jni-impl/natives/build
             cmake $COMMON_JNI_NATIVES_CMAKE_FLAGS "-DCMAKE_OSX_ARCHITECTURES=arm64;arm64e;x86_64;x86_64h" ..
             cmake --build . -j 4 --config Release
-            cp libzstd-jni.dylib ../output/libzstd.dylib
+            cp libzstd-jni.dylib ../../../output/libzstd.dylib
             cd ..
           fi
 
