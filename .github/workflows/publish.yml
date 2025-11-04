@@ -133,7 +133,7 @@ jobs:
       - name: Publish Artifacts
         uses: actions/upload-artifact@v5
         with:
-          name: jni-natives-ubuntu-latest
+          name: jni-natives-${{ matrix.os }}
           path: output
 
   publish:
@@ -165,7 +165,7 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           path: temp-jni-natives
-          pattern: jni-natives-ubuntu-latest
+          pattern: jni-natives-*
           merge-multiple: true
 
       - name: Move Artifacts
