@@ -98,7 +98,7 @@ jobs:
               cd jni-impl/natives/build-$arch
               cmake $COMMON_JNI_NATIVES_CMAKE_FLAGS -A $arch ..
               cmake --build . -j 4 --config Release
-              cp Release/zstd.dll ../../../output/$arch/libzstd.dll
+              cp Release/libzstd-jni.dll ../../../output/$arch/libzstd.dll
               cd ../../..
             done
           elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
