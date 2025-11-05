@@ -54,8 +54,10 @@ You will only need the `dev.freya02:discord-zstd-java-api:VERSION` dependency, i
 
 ### Usage
 
-First, get a `ZstdDecompressorFactory` by loading one using a `ServiceLoader`,
+First, get a `ZstdDecompressorFactoryProvider` by loading one using a `ServiceLoader`,
 doing this first ensures you can throw an error when missing an implementation before it can throw one because of missing natives, as they are brought by the implementation.
 
 Then, you can check if the natives are loaded by checking `ZstdNativesLoader.isLoaded()`,
 but usually you'll want to call `loadFromJar()`, you should do it late enough so the bot developer has a chance to load different natives.
+
+Finally, get a factory from the provider, it will be configured with the values you pass.
