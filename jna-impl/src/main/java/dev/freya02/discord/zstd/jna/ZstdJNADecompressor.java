@@ -24,11 +24,11 @@ public class ZstdJNADecompressor extends AbstractZstdDecompressor {
 
     protected ZstdJNADecompressor(int bufferSize)
     {
-        if (bufferSize < MIN_BUFFER_SIZE && bufferSize != DEFAULT_BUFFER_SIZE)
+        if (bufferSize < MIN_BUFFER_SIZE && bufferSize != RECOMMENDED_BUFFER_SIZE)
             throw new IllegalArgumentException("Buffer must be higher than or equal to " + MIN_BUFFER_SIZE + ", provided " + bufferSize);
 
         this.stream = ZstdJna.INSTANCE.ZSTD_createDStream();
-        if (bufferSize == DEFAULT_BUFFER_SIZE)
+        if (bufferSize == RECOMMENDED_BUFFER_SIZE)
             bufferSize = Math.toIntExact(ZstdJna.INSTANCE.ZSTD_DStreamOutSize());
 
         outputSegment = new ZstdJna.ZSTD_outBuffer(bufferSize);

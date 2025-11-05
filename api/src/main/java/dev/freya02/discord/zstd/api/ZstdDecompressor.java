@@ -10,11 +10,14 @@ import org.jspecify.annotations.NullMarked;
  */
 @NullMarked
 public interface ZstdDecompressor {
-    /** The default buffer size as defined by {@code ZSTD_DStreamOutSize()} (128 KB as of v1.5.7) */
-    int DEFAULT_BUFFER_SIZE = -1;
+    /** The recommended buffer size as defined by {@code ZSTD_DStreamOutSize()} (128 KB as of v1.5.7). This isn't a default. */
+    int RECOMMENDED_BUFFER_SIZE = -2; // Reserve -1 for defaults of libraries
 
-    /** The minimum buffer size for decompression, 8 KB */
-    int MIN_BUFFER_SIZE = 8192;
+    /** The default buffer size for decompression, 8 KB */
+    int DEFAULT_BUFFER_SIZE = 8192;
+
+    /** The minimum buffer size for decompression, 1 KB */
+    int MIN_BUFFER_SIZE = 1024;
 
     /**
      * Resets the decompressor, the next decompressed message must be the first message of the Zstd stream,
