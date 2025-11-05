@@ -18,14 +18,13 @@ public class ZstdJNIDecompressor extends AbstractZstdDecompressor {
     private boolean invalidated = false;
     private boolean closed = false;
 
-    protected ZstdJNIDecompressor(int bufferSize)
+    protected ZstdJNIDecompressor(int bufferSizeHint)
     {
-        if (bufferSize < MIN_BUFFER_SIZE && bufferSize != RECOMMENDED_BUFFER_SIZE)
-            throw new IllegalArgumentException("Buffer must be higher than or equal to " + MIN_BUFFER_SIZE + ", provided " + bufferSize);
-
         this.zds = createDStream();
-        if (bufferSize == RECOMMENDED_BUFFER_SIZE)
-            bufferSize = Math.toIntExact(DStreamOutSize());
+
+        int bufferSize = bufferSizeHint == RECOMMENDED_BUFFER_SIZE
+                ? Math.toIntExact(DStreamOutSize())
+                : bufferSizeHint;
 
         this.buffer = new byte[bufferSize];
 

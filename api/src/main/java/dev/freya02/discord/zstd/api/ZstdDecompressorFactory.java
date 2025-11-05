@@ -2,27 +2,17 @@ package dev.freya02.discord.zstd.api;
 
 import org.jspecify.annotations.NullMarked;
 
-import java.util.ServiceLoader;
-
 /**
  * Factory of {@link ZstdDecompressor}.
  *
- * <p>Instances are thread safe and can be obtained using {@link ServiceLoader}.
+ * <p>Instances are thread safe.
  */
 @NullMarked
 public interface ZstdDecompressorFactory {
     /**
-     * Creates a new {@link ZstdDecompressor} instance with the provided decompression buffer size.
-     *
-     * @param  bufferSize
-     *         The size of the buffer used for decompression,
-     *         must be larger than {@value ZstdDecompressor#MIN_BUFFER_SIZE} or be equal to {@value ZstdDecompressor#RECOMMENDED_BUFFER_SIZE}.
-     *         Typically, bigger buffers mean less decompression loops, it does not change inputs or outputs
-     *
-     * @throws IllegalArgumentException
-     *         If {@code bufferSize} is less than {@value ZstdDecompressor#MIN_BUFFER_SIZE} and not {@value ZstdDecompressor#RECOMMENDED_BUFFER_SIZE}
+     * Creates a new {@link ZstdDecompressor} configured with the parameters passed to this factory.
      *
      * @return A new {@link ZstdDecompressor} instance
      */
-    ZstdDecompressor get(int bufferSize);
+    ZstdDecompressor create();
 }

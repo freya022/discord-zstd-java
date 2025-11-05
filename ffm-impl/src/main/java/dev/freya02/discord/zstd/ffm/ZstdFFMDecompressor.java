@@ -24,14 +24,13 @@ public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
     private boolean invalidated = false;
     private boolean closed = false;
 
-    protected ZstdFFMDecompressor(int bufferSize)
+    protected ZstdFFMDecompressor(int bufferSizeHint)
     {
-        if (bufferSize < MIN_BUFFER_SIZE && bufferSize != RECOMMENDED_BUFFER_SIZE)
-            throw new IllegalArgumentException("Buffer must be higher than or equal to " + MIN_BUFFER_SIZE + ", provided " + bufferSize);
-
         this.stream = Zstd.ZSTD_createDStream();
-        if (bufferSize == RECOMMENDED_BUFFER_SIZE)
-            bufferSize = Math.toIntExact(Zstd.ZSTD_DStreamOutSize());
+
+        int bufferSize = bufferSizeHint == RECOMMENDED_BUFFER_SIZE
+                ? Math.toIntExact(Zstd.ZSTD_DStreamOutSize())
+                : bufferSizeHint;
 
         final Arena arena = Arena.ofAuto();
         outputSegment = ZSTD_outBuffer.allocate(arena);

@@ -3,9 +3,9 @@ package dev.freya02.discord.zstd;
 import dev.freya02.discord.zstd.api.ZstdDecompressor;
 import dev.freya02.discord.zstd.api.ZstdDecompressorFactory;
 import dev.freya02.discord.zstd.api.ZstdNativesLoader;
-import dev.freya02.discord.zstd.ffm.ZstdFFMDecompressorFactory;
-import dev.freya02.discord.zstd.jna.ZstdJNADecompressorFactory;
-import dev.freya02.discord.zstd.jni.ZstdJNIDecompressorFactory;
+import dev.freya02.discord.zstd.ffm.ZstdFFMDecompressorFactoryProvider;
+import dev.freya02.discord.zstd.jna.ZstdJNADecompressorFactoryProvider;
+import dev.freya02.discord.zstd.jni.ZstdJNIDecompressorFactoryProvider;
 import net.dv8tion.jda.internal.utils.compress.ZlibDecompressor;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
@@ -36,12 +36,12 @@ public class ZstdDecompressorBenchmark {
         public void setup() throws IOException {
             ZstdNativesLoader.loadFromJar();
             ZstdDecompressorFactory factory = switch (impl) {
-                case "ffm" -> new ZstdFFMDecompressorFactory();
-                case "jna" -> new ZstdJNADecompressorFactory();
-                case "jni" -> new ZstdJNIDecompressorFactory();
+                case "ffm" -> new ZstdFFMDecompressorFactoryProvider().get(ZSTD_BUFFER_SIZE);
+                case "jna" -> new ZstdJNADecompressorFactoryProvider().get(ZSTD_BUFFER_SIZE);
+                case "jni" -> new ZstdJNIDecompressorFactoryProvider().get(ZSTD_BUFFER_SIZE);
                 default -> throw new AssertionError("Unknown implementation: " + impl);
             };
-            decompressor = factory.get(ZSTD_BUFFER_SIZE);
+            decompressor = factory.create();
         }
 
         @TearDown
