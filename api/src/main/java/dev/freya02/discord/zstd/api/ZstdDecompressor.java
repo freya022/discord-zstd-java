@@ -10,8 +10,15 @@ import org.jspecify.annotations.NullMarked;
  */
 @NullMarked
 public interface ZstdDecompressor {
-    /** The recommended buffer size as defined by {@code ZSTD_DStreamOutSize()} (128 KB as of v1.5.7). This isn't a default. */
-    int RECOMMENDED_BUFFER_SIZE = -2; // Reserve -1 for defaults of libraries
+    /**
+     * The "recommended" buffer size as defined by {@code ZSTD_DStreamOutSize()} (128 KB as of v1.5.7). This isn't a default.
+     *
+     * <p>For the use case of Discord's gateway,
+     * the value returned is overkill as it would mean <b>at least</b> 128 KB (Zstd's context has even more data) allocated for every shard,
+     * for this reason we recommend you to stick to the default buffer size,
+     * as it should be enough for most gateway messages without requiring multiple passes.
+     */
+    int ZSTD_RECOMMENDED_BUFFER_SIZE = -2; // Reserve -1 for defaults of libraries
 
     /** The default buffer size for decompression, 8 KB */
     int DEFAULT_BUFFER_SIZE = 8192;

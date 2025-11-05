@@ -22,7 +22,7 @@ public class ZstdJNIDecompressor extends AbstractZstdDecompressor {
     {
         this.zds = createDStream();
 
-        int bufferSize = bufferSizeHint == RECOMMENDED_BUFFER_SIZE
+        int bufferSize = bufferSizeHint == ZSTD_RECOMMENDED_BUFFER_SIZE
                 ? Math.toIntExact(DStreamOutSize())
                 : bufferSizeHint;
 

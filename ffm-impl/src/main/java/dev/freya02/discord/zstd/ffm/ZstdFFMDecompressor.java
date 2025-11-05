@@ -28,7 +28,7 @@ public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
     {
         this.stream = Zstd.ZSTD_createDStream();
 
-        int bufferSize = bufferSizeHint == RECOMMENDED_BUFFER_SIZE
+        int bufferSize = bufferSizeHint == ZSTD_RECOMMENDED_BUFFER_SIZE
                 ? Math.toIntExact(Zstd.ZSTD_DStreamOutSize())
                 : bufferSizeHint;
 

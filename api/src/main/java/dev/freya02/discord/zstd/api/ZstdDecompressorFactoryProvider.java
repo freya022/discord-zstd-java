@@ -16,11 +16,11 @@ public interface ZstdDecompressorFactoryProvider {
      *
      * @param  bufferSizeHint
      *         A hint for the size of the buffer used for decompression,
-     *         must be larger than {@value ZstdDecompressor#MIN_BUFFER_SIZE} or be equal to {@value ZstdDecompressor#RECOMMENDED_BUFFER_SIZE}.
+     *         must be larger than {@value ZstdDecompressor#MIN_BUFFER_SIZE} or be equal to {@value ZstdDecompressor#ZSTD_RECOMMENDED_BUFFER_SIZE}.
      *         Typically, bigger buffers mean less decompression loops, it does not change inputs or outputs
      *
      * @throws IllegalArgumentException
-     *         If {@code bufferSize} is less than {@value ZstdDecompressor#MIN_BUFFER_SIZE} and not {@value ZstdDecompressor#RECOMMENDED_BUFFER_SIZE}
+     *         If {@code bufferSize} is less than {@value ZstdDecompressor#MIN_BUFFER_SIZE} and not {@value ZstdDecompressor#ZSTD_RECOMMENDED_BUFFER_SIZE}
      *
      * @return A new {@link ZstdDecompressorFactory} instance
      */
