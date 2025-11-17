@@ -1,4 +1,3 @@
-#include <chunks.hpp>
 #include <library.hpp>
 #include <vector>
 #include <zstd.h>
@@ -24,10 +23,12 @@ jlong Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_initDStream(
 }
 
 jbyteArray Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_decompressMessage(
-    JNIEnv *env, jclass, jlong zds, jbyteArray bufferArray, jbyteArray inputArray) {
+    JNIEnv *env, jclass, const jlong zds, jbyteArray inputArray) {
+    char buf[ZSTD_BLOCKSIZE_MAX];
+
     ZSTD_outBuffer output;
-    output.dst = env->GetPrimitiveArrayCritical(bufferArray, nullptr);
-    output.size = env->GetArrayLength(bufferArray);
+    output.dst = buf;
+    output.size = ZSTD_BLOCKSIZE_MAX;
     output.pos = 0;
 
     ZSTD_inBuffer input;
@@ -35,7 +36,7 @@ jbyteArray Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_decompressMessa
     input.size = env->GetArrayLength(inputArray);
     input.pos = 0;
 
-    Chunks chunks;
+    auto outputVec = std::vector<char>();
 
     while (true) {
         // In cases where the output buffer is too small for the decompressed input,
@@ -52,13 +53,15 @@ jbyteArray Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_decompressMessa
         // Only merge when no input was consumed,
         // Zstd may have decompressed data in its buffers that it will hand off to us without consuming input
         if (result == 0 || (!madeForwardProgress && fullyProcessedInput)) {
-            const auto decompressed = mergeChunks(env, chunks, output);
-
-            env->ReleasePrimitiveArrayCritical(bufferArray, output.dst, 0);
+            // env->ReleasePrimitiveArrayCritical(bufferArray, output.dst, 0);
             env->ReleasePrimitiveArrayCritical(inputArray, const_cast<void *>(input.src), 0);
+
+            const auto decompressed = env->NewByteArray(static_cast<jsize>(outputVec.size()));
+            env->SetByteArrayRegion(decompressed, 0, static_cast<jsize>(outputVec.size()),
+                                    reinterpret_cast<jbyte *>(outputVec.data()));
             return decompressed;
         } else if (ZSTD_isError(result)) {
-            env->ReleasePrimitiveArrayCritical(bufferArray, output.dst, 0);
+            // env->ReleasePrimitiveArrayCritical(bufferArray, output.dst, 0);
             env->ReleasePrimitiveArrayCritical(inputArray, const_cast<void *>(input.src), 0);
 
             const auto errorName = ZSTD_getErrorName(result);
@@ -67,14 +70,7 @@ jbyteArray Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_decompressMessa
 
             return nullptr;
         } else {
-            // Copy our output
-            const auto outputBytes = static_cast<jbyte *>(output.dst);
-            // Same as:
-            // auto chunk = std::vector(outputBytes, outputBytes + output.pos)
-            // chunks.push_back(std::move(chunk))
-            // Also same as:
-            // chunks.push_back(std::vector(outputBytes, outputBytes + output.pos))
-            chunks.emplace_back(outputBytes, outputBytes + output.pos);
+            outputVec.insert(outputVec.end(), buf, static_cast<char *>(output.dst) + output.pos);
         }
     }
 }
