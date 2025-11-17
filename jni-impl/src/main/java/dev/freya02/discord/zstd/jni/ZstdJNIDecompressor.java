@@ -13,6 +13,7 @@ public class ZstdJNIDecompressor extends AbstractZstdDecompressor {
     private static final Logger LOG = LoggerFactory.getLogger(ZstdJNIDecompressor.class);
 
     private final long zds;
+    private final byte[] buffer;
 
     private boolean invalidated = false;
     private boolean closed = false;
@@ -20,6 +21,12 @@ public class ZstdJNIDecompressor extends AbstractZstdDecompressor {
     protected ZstdJNIDecompressor(int bufferSizeHint)
     {
         this.zds = createDStream();
+
+        int bufferSize = bufferSizeHint == ZSTD_RECOMMENDED_BUFFER_SIZE
+                ? Math.toIntExact(DStreamOutSize())
+                : bufferSizeHint;
+
+        this.buffer = new byte[bufferSize];
 
         reset();
     }
@@ -58,12 +65,12 @@ public class ZstdJNIDecompressor extends AbstractZstdDecompressor {
         if (LOG.isTraceEnabled())
             LOG.trace("Decompressing data {}", Arrays.toString(data));
 
-        return decompressMessage(zds, data);
+        return decompressMessage(zds, buffer, data);
     }
 
     private static native long createDStream();
     private static native long freeDStream(long zds);
     private static native int DStreamOutSize();
     private static native long initDStream(long zds);
-    private static native byte[] decompressMessage(long zds, byte[] input);
+    private static native byte[] decompressMessage(long zds, byte[] buffer, byte[] input);
 }

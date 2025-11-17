@@ -23,12 +23,11 @@ jlong Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_initDStream(
 }
 
 jbyteArray Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_decompressMessage(
-    JNIEnv *env, jclass, const jlong zds, jbyteArray inputArray) {
-    char buf[ZSTD_BLOCKSIZE_MAX];
+    JNIEnv *env, jclass, const jlong zds, jbyteArray bufferArray, const jbyteArray inputArray) {
 
     ZSTD_outBuffer output;
-    output.dst = buf;
-    output.size = ZSTD_BLOCKSIZE_MAX;
+    output.dst = env->GetPrimitiveArrayCritical(bufferArray, nullptr);
+    output.size = env->GetArrayLength(bufferArray);
     output.pos = 0;
 
     ZSTD_inBuffer input;
@@ -36,7 +35,7 @@ jbyteArray Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_decompressMessa
     input.size = env->GetArrayLength(inputArray);
     input.pos = 0;
 
-    auto outputVec = std::vector<char>(ZSTD_BLOCKSIZE_MAX);
+    auto outputVec = std::vector<char>();
 
     while (true) {
         // In cases where the output buffer is too small for the decompressed input,
@@ -70,7 +69,8 @@ jbyteArray Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_decompressMessa
 
             return nullptr;
         } else {
-            outputVec.insert(outputVec.end(), buf, static_cast<char *>(output.dst) + output.pos);
+            const auto outputBuffer = static_cast<char *>(output.dst);
+            outputVec.insert(outputVec.end(), outputBuffer, outputBuffer + output.pos);
         }
     }
 }

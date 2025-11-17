@@ -17,7 +17,7 @@ JNIEXPORT jlong JNICALL Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_in
     JNIEnv *env, jclass obj, jlong zds);
 
 JNIEXPORT jbyteArray JNICALL Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_decompressMessage(
-    JNIEnv *env, jclass obj, jlong zds, jbyteArray inputArray);
+    JNIEnv *env, jclass obj, jlong zds, jbyteArray bufferArray, jbyteArray inputArray);
 }
 
 #endif // NATIVES_LIBRARY_H
