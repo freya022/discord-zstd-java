@@ -42,7 +42,7 @@ jbyteArray Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_decompressMessa
         // we'll loop back, so, reset the output position
         output.pos = 0;
 
-        const std::size_t previousInputOffset = input.pos;
+        const auto previousInputOffset = input.pos;
 
         const std::size_t result = ZSTD_decompressStream(reinterpret_cast<ZSTD_DStream *>(zds), &output, &input);
 

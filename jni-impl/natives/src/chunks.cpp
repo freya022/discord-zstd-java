@@ -11,9 +11,9 @@ std::size_t getTotalDataLength(const Chunks &chunks, const ZSTD_outBuffer &final
 
 jbyteArray mergeChunks(
     JNIEnv *env, const Chunks &chunks, const ZSTD_outBuffer &finalChunk) {
-    const std::size_t length = getTotalDataLength(chunks, finalChunk);
+    const auto length = getTotalDataLength(chunks, finalChunk);
 
-    jbyteArray finalOutput = env->NewByteArray(static_cast<jsize>(length));
+    const auto finalOutput = env->NewByteArray(static_cast<jsize>(length));
     jsize offset = 0;
     for (const auto &chunk: chunks) {
         const auto chunkSize = static_cast<jsize>(chunk.size());
