@@ -19,7 +19,9 @@ public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
     private static final Logger LOG = LoggerFactory.getLogger(ZstdFFMDecompressor.class);
 
     private final MemorySegment stream;
-    private final MemorySegment outputSegment;
+    private final MemorySegment dstSegment;
+    private final long dstSize;
+    private final MemorySegment dstPosSegment;
 
     private boolean invalidated = false;
     private boolean closed = false;
@@ -33,10 +35,10 @@ public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
                 : bufferSizeHint;
 
         final Arena arena = Arena.ofAuto();
-        outputSegment = ZSTD_outBuffer.allocate(arena);
-        ZSTD_outBuffer.dst(outputSegment, arena.allocate(bufferSize));
-        ZSTD_outBuffer.size(outputSegment, bufferSize);
-        ZSTD_outBuffer.pos(outputSegment, 0);
+        this.dstSegment = arena.allocate(ValueLayout.JAVA_BYTE, bufferSize);
+        this.dstSize = bufferSize;
+        this.dstPosSegment = arena.allocate(ValueLayout.JAVA_LONG);
+        dstPosSegment.set(ValueLayout.JAVA_LONG, 0, 0);
 
         reset();
     }
@@ -85,25 +87,25 @@ public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
         try (Arena arena = Arena.ofConfined())
         {
             // Copy compressed data to native memory
-            final MemorySegment inputSegment = ZSTD_inBuffer.allocate(arena);
-            ZSTD_inBuffer.src(inputSegment, arena.allocateFrom(ValueLayout.JAVA_BYTE, data));
-            ZSTD_inBuffer.size(inputSegment, data.length);
+            final MemorySegment inputSegment = MemorySegment.ofArray(data);
+            final long inputSize = data.length;
+            final MemorySegment inputPos = arena.allocate(ValueLayout.JAVA_LONG);
 
             while (true) {
                 // In cases where the output buffer is too small for the decompressed input,
                 // we'll loop back, so, reset the output position
-                ZSTD_outBuffer.pos(outputSegment, 0);
+                dstPosSegment.set(ValueLayout.JAVA_LONG, 0, 0);
 
                 // To compare whether Zstd consumed input
-                long previousInputOffset = ZSTD_inBuffer.pos(inputSegment);
+                long previousInputOffset = inputPos.get(ValueLayout.JAVA_LONG, 0);
 
-                final long result = Zstd.ZSTD_decompressStream(stream, outputSegment, inputSegment);
-                final byte[] bytes = ZSTD_outBuffer.dst(outputSegment)
-                        .reinterpret(ZSTD_outBuffer.pos(outputSegment))
+                final long result = Zstd.ZSTD_decompressStream_simpleArgs(stream, dstSegment, dstSize, dstPosSegment, inputSegment, inputSize, inputPos);
+                final byte[] bytes = dstSegment
+                        .reinterpret(dstPosSegment.get(ValueLayout.JAVA_LONG, 0))
                         .toArray(ValueLayout.JAVA_BYTE);
 
-                boolean madeForwardProgress = ZSTD_inBuffer.pos(inputSegment) > previousInputOffset || ZSTD_outBuffer.pos(outputSegment) > 0;
-                boolean fullyProcessedInput = ZSTD_inBuffer.pos(inputSegment) == data.length;
+                boolean madeForwardProgress = inputPos.get(ValueLayout.JAVA_LONG, 0) > previousInputOffset || dstPosSegment.get(ValueLayout.JAVA_LONG, 0) > 0;
+                boolean fullyProcessedInput = inputPos.get(ValueLayout.JAVA_LONG, 0) == data.length;
 
                 // Only merge when no input was consumed,
                 // Zstd may have decompressed data in its buffers that it will hand off to us without consuming input

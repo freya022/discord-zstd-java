@@ -19,7 +19,7 @@ import static java.lang.foreign.ValueLayout.JAVA_BYTE;
  *
  * <p>Alternatively, use advanced API to set specific properties.
  *
- * <p>Use {@link #ZSTD_decompressStream(MemorySegment, MemorySegment, MemorySegment)} repetitively to consume your input.
+ * <p>Use {@link #ZSTD_decompressStream_simpleArgs(MemorySegment, MemorySegment, long, MemorySegment, MemorySegment, long, MemorySegment)} repetitively to consume your input.
  * The function will update both {@code pos} fields.
  * If {@code input.pos < input.size}, some input has not been consumed.
  * It's up to the caller to present again remaining data.
@@ -31,7 +31,7 @@ import static java.lang.foreign.ValueLayout.JAVA_BYTE;
  * If @return > 0, the frame is not complete, meaning
  * either there is still some data left to flush within internal buffers,
  * or there is more input to read to complete the frame (or both).
- * In which case, call {@link #ZSTD_decompressStream(MemorySegment, MemorySegment, MemorySegment)} again to flush whatever remains in the buffer.
+ * In which case, call {@link #ZSTD_decompressStream_simpleArgs(MemorySegment, MemorySegment, long, MemorySegment, MemorySegment, long, MemorySegment)} again to flush whatever remains in the buffer.
  * Note : with no additional input provided, amount of data flushed is necessarily &lt;= 131072.
  *  - return : 0 when a frame is completely decoded and fully flushed,
  *       or an error code, which can be tested using {@link #ZSTD_isError(long)},
@@ -268,17 +268,17 @@ public final class Zstd {
         }
     }
 
-    private static class ZSTD_decompressStream {
+    private static class ZSTD_decompressStream_simpleArgs {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
             Zstd.C_LONG_LONG,
             Zstd.C_POINTER,
-            Zstd.C_POINTER,
-            Zstd.C_POINTER
+            Zstd.C_POINTER, Zstd.C_LONG_LONG, Zstd.C_POINTER,
+            Zstd.C_POINTER, Zstd.C_LONG_LONG, Zstd.C_POINTER
         );
 
-        public static final MemorySegment ADDR = Zstd.findOrThrow("ZSTD_decompressStream");
+        public static final MemorySegment ADDR = Zstd.findOrThrow("ZSTD_decompressStream_simpleArgs");
 
-        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC, Linker.Option.critical(true));
     }
 
     private static class ZSTD_DStreamOutSize {
@@ -328,13 +328,13 @@ public final class Zstd {
      *   size_t ZSTD_decompressStream(ZSTD_DStream *zds, ZSTD_outBuffer *output, ZSTD_inBuffer *input)
      *   }
      */
-    public static long ZSTD_decompressStream(MemorySegment zds, MemorySegment output, MemorySegment input) {
-        var mh$ = ZSTD_decompressStream.HANDLE;
+    public static long ZSTD_decompressStream_simpleArgs(MemorySegment zds, MemorySegment dst, long dstCapacity, MemorySegment dstPos, MemorySegment src, long srcSize, MemorySegment srcPos) {
+        var mh$ = ZSTD_decompressStream_simpleArgs.HANDLE;
         try {
             if (TRACE_DOWNCALLS) {
-                traceDowncall("ZSTD_decompressStream", zds, output, input);
+                traceDowncall("ZSTD_decompressStream_simpleArgs", zds, dst, dstCapacity, dstPos, src, srcSize, srcPos);
             }
-            return (long)mh$.invokeExact(zds, output, input);
+            return (long)mh$.invokeExact(zds, dst, dstCapacity, dstPos, src, srcSize, srcPos);
         } catch (Throwable ex$) {
            throw new AssertionError("should not reach here", ex$);
         }
