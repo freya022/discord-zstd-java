@@ -38,7 +38,7 @@ public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
         this.dstSegment = arena.allocate(ValueLayout.JAVA_BYTE, bufferSize);
         this.dstSize = bufferSize;
         this.dstPosSegment = arena.allocate(ValueLayout.JAVA_LONG);
-        dstPosSegment.set(ValueLayout.JAVA_LONG, 0, 0);
+        setLong(dstPosSegment, 0);
 
         reset();
     }
@@ -94,18 +94,18 @@ public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
             while (true) {
                 // In cases where the output buffer is too small for the decompressed input,
                 // we'll loop back, so, reset the output position
-                dstPosSegment.set(ValueLayout.JAVA_LONG, 0, 0);
+                setLong(dstPosSegment, 0);
 
                 // To compare whether Zstd consumed input
-                long previousInputOffset = inputPos.get(ValueLayout.JAVA_LONG, 0);
+                long previousInputOffset = getLong(inputPos);
 
                 final long result = Zstd.ZSTD_decompressStream_simpleArgs(stream, dstSegment, dstSize, dstPosSegment, inputSegment, inputSize, inputPos);
                 final byte[] bytes = dstSegment
-                        .reinterpret(dstPosSegment.get(ValueLayout.JAVA_LONG, 0))
+                        .reinterpret(getLong(dstPosSegment))
                         .toArray(ValueLayout.JAVA_BYTE);
 
-                boolean madeForwardProgress = inputPos.get(ValueLayout.JAVA_LONG, 0) > previousInputOffset || dstPosSegment.get(ValueLayout.JAVA_LONG, 0) > 0;
-                boolean fullyProcessedInput = inputPos.get(ValueLayout.JAVA_LONG, 0) == data.length;
+                boolean madeForwardProgress = getLong(inputPos) > previousInputOffset || getLong(dstPosSegment) > 0;
+                boolean fullyProcessedInput = getLong(inputPos) == data.length;
 
                 // Only merge when no input was consumed,
                 // Zstd may have decompressed data in its buffers that it will hand off to us without consuming input
@@ -128,6 +128,14 @@ public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
                 }
             }
         }
+    }
+
+    private static void setLong(MemorySegment segment, long value) {
+        segment.set(ValueLayout.JAVA_LONG, 0, value);
+    }
+
+    private static long getLong(MemorySegment segment) {
+        return segment.get(ValueLayout.JAVA_LONG, 0);
     }
 
     private ZstdException createException(String message) {
