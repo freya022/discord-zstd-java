@@ -1,5 +1,5 @@
-#ifndef NATIVES_LIBRARY_H
-#define NATIVES_LIBRARY_H
+#ifndef NATIVES_DECOMPRESSOR_H
+#define NATIVES_DECOMPRESSOR_H
 
 #include <jni.h>
 
@@ -20,4 +20,4 @@ JNIEXPORT jbyteArray JNICALL Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompress
     JNIEnv *env, jclass obj, jlong zds, jbyteArray bufferArray, jbyteArray inputArray);
 }
 
-#endif // NATIVES_LIBRARY_H
+#endif // NATIVES_DECOMPRESSOR_H
