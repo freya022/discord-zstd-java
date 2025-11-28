@@ -62,7 +62,7 @@ public class ZstdFFMInputStream extends InputStream {
         // To compare whether Zstd consumed input
         long previousInputOffset = getLong(inputPos);
 
-        long result = context.decompress(MemorySegment.ofArray(b).asSlice(off), len, bufferPos, input, inputSize, inputPos);
+        context.decompress(MemorySegment.ofArray(b).asSlice(off), len, bufferPos, input, inputSize, inputPos);
         // No need to read buffer, the backing array has been updated
 
         boolean madeForwardProgress = getLong(inputPos) > previousInputOffset || getLong(bufferPos) > 0;
@@ -70,16 +70,8 @@ public class ZstdFFMInputStream extends InputStream {
 
         if (!madeForwardProgress && fullyProcessedInput) {
             return -1; // EOF
-        } else if (result == 0) {
-            return (int) getLong(bufferPos);
-        } else if (result > 0) {
-            if (!fullyProcessedInput && !madeForwardProgress) {
-                throw context.createException("Malformed");
-            }
-
-            return (int) getLong(bufferPos);
         } else {
-            throw context.createException("Unexpected result: %d".formatted(result));
+            return (int) getLong(bufferPos);
         }
     }
 
