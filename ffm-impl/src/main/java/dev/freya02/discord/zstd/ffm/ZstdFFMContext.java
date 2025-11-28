@@ -41,7 +41,7 @@ public class ZstdFFMContext implements ZstdContext {
         return new ZstdFFMInputStream(this, input);
     }
 
-    public long decompress(MemorySegment dst, long dstCapacity, MemorySegment dstPos, MemorySegment src, long srcSize, MemorySegment srcPos) {
+    public void decompress(MemorySegment dst, long dstCapacity, MemorySegment dstPos, MemorySegment src, long srcSize, MemorySegment srcPos) {
         if (closed)
             throw new IllegalStateException("Context is closed");
         if (invalidated)
@@ -52,8 +52,6 @@ public class ZstdFFMContext implements ZstdContext {
         if (Zstd.ZSTD_isError(result) > 0) {
             throw createException(Zstd.ZSTD_getErrorName(result).getString(0));
         }
-
-        return result;
     }
 
     public ZstdException createException(String message) {
