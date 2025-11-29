@@ -27,7 +27,7 @@ public class ZstdDecompressorBenchmark {
 
     @State(Scope.Benchmark)
     public static class ZstdDecompressorState {
-        @Param({"ffm", "jna", "jni"})
+        @Param({"jni"})
         private String impl;
 
         public ZstdDecompressor decompressor;
@@ -36,8 +36,6 @@ public class ZstdDecompressorBenchmark {
         public void setup() throws IOException {
             ZstdNativesLoader.loadFromJar();
             ZstdDecompressorFactory factory = switch (impl) {
-                case "ffm" -> new ZstdFFMDecompressorFactoryProvider().get(ZSTD_BUFFER_SIZE);
-                case "jna" -> new ZstdJNADecompressorFactoryProvider().get(ZSTD_BUFFER_SIZE);
                 case "jni" -> new ZstdJNIDecompressorFactoryProvider().get(ZSTD_BUFFER_SIZE);
                 default -> throw new AssertionError("Unknown implementation: " + impl);
             };

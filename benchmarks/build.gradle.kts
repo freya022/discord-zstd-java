@@ -10,8 +10,6 @@ repositories {
 
 dependencies {
     jmh(libs.jda)
-    jmh(project(":ffm-impl"))
-    jmh(project(":jna-impl"))
     jmh(project(":jni-impl"))
     jmh(project(":test-data"))
 }
