@@ -1,20 +1,10 @@
 plugins {
+    `java-conventions`
     `java-library`
-}
-
-repositories {
-    mavenCentral()
 }
 
 dependencies {
     compileOnly(libs.jspecify)
-}
-
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-    options.isIncremental = true
-
-    options.release = 8
 }
 
 tasks.withType<Test> {

@@ -1,4 +1,5 @@
 plugins {
+    `java-conventions`
     `java-library`
     `publish-conventions`
 }
@@ -15,10 +16,7 @@ java {
 }
 
 // There are no sources but Gradle will say the lib requires [current JDK] if we don't do that
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-    options.isIncremental = true
-
+tasks.named<JavaCompile>("compileJava") {
     options.release.set(8)
 }
 

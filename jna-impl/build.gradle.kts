@@ -1,4 +1,5 @@
 plugins {
+    `java-conventions`
     `java-library`
     `publish-conventions`
 }
@@ -7,10 +8,6 @@ val fullProjectName = "${rootProject.name}-${project.name}"
 
 tasks.withType<Jar> {
     archiveBaseName = fullProjectName
-}
-
-repositories {
-    mavenCentral()
 }
 
 dependencies {
@@ -36,10 +33,7 @@ java {
     withSourcesJar()
 }
 
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-    options.isIncremental = true
-
+tasks.named<JavaCompile>("compileJava") {
     options.release.set(8)
 }
 
