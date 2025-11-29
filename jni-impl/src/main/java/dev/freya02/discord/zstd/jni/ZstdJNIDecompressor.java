@@ -1,5 +1,6 @@
 package dev.freya02.discord.zstd.jni;
 
+import dev.freya02.discord.zstd.api.ZstdException;
 import dev.freya02.discord.zstd.internal.AbstractZstdDecompressor;
 import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
@@ -65,7 +66,12 @@ public class ZstdJNIDecompressor extends AbstractZstdDecompressor {
         if (LOG.isTraceEnabled())
             LOG.trace("Decompressing data {}", Arrays.toString(data));
 
-        return decompressMessage(zds, buffer, data);
+        try {
+            return decompressMessage(zds, buffer, data);
+        } catch (ZstdException e) {
+            invalidated = true;
+            throw e;
+        }
     }
 
     private static native long createDStream();
