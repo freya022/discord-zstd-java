@@ -3,7 +3,9 @@ project(libzstd-jni CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(libzstd-jni SHARED src/library.cpp src/chunks.cpp)
+add_library(libzstd-jni SHARED src/decompressor.cpp src/chunks.cpp
+        src/streaming.cpp
+        src/context.cpp)
 
 set_target_properties(
         libzstd-jni
