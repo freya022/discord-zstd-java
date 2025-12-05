@@ -22,6 +22,8 @@ dependencies {
     // JUnit 5 (JUnit 6 is not Java 8 compatible)
     testImplementation(libs.bundles.junit)
     testImplementation(project(":test-data"))
+
+    testRuntimeOnly(libs.logback.classic)
 }
 
 java {
