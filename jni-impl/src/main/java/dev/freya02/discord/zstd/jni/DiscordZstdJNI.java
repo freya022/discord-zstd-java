@@ -1,6 +1,7 @@
 package dev.freya02.discord.zstd.jni;
 
 import dev.freya02.discord.zstd.api.*;
+import dev.freya02.discord.zstd.internal.NativeUtil;
 import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,11 @@ public class DiscordZstdJNI implements DiscordZstd {
         LOGGER.debug("Using JNI implementation of discord-zstd-java");
 
         // Load natives if they weren't already
-        DiscordZstdNativesLoader.loadFromJar();
+        if (!DiscordZstdNativesLoader.isLoaded()) {
+            NativeUtil.System system = NativeUtil.getSystem();
+            String relativeNativeResource = String.format("natives/%s/libzstd-jni.%s", system.platform, system.sharedLibraryExtension);
+            DiscordZstdNativesLoader.loadFromJar(relativeNativeResource, DiscordZstdJNI.class);
+        }
     }
 
     @Override

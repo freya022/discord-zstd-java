@@ -98,7 +98,7 @@ jobs:
               cd jni-impl/natives/build-$arch
               cmake $COMMON_JNI_NATIVES_CMAKE_FLAGS -A $arch ..
               cmake --build . -j 4 --config Release
-              cp Release/libzstd-jni.dll ../../../output/$arch/libzstd.dll
+              cp Release/libzstd-jni.dll ../../../output/$arch/libzstd-jni.dll
               cd ../../..
             done
           elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
@@ -118,7 +118,7 @@ jobs:
                 cmake $COMMON_JNI_NATIVES_CMAKE_FLAGS ..
               fi
               cmake --build . -j 4
-              cp libzstd-jni.so ../../../output/$arch/libzstd.so
+              cp libzstd-jni.so ../../../output/$arch/libzstd-jni.so
               cd ../../..
             done
           elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
@@ -126,7 +126,7 @@ jobs:
             cd jni-impl/natives/build
             cmake $COMMON_JNI_NATIVES_CMAKE_FLAGS "-DCMAKE_OSX_ARCHITECTURES=arm64;arm64e;x86_64;x86_64h" ..
             cmake --build . -j 4 --config Release
-            cp libzstd-jni.dylib ../../../output/libzstd.dylib
+            cp libzstd-jni.dylib ../../../output/libzstd-jni.dylib
             cd ../../..
           fi
 
@@ -188,12 +188,12 @@ jobs:
           mkdir -p jni-impl/src/main/resources/natives/win32-x86-64
           mkdir -p jni-impl/src/main/resources/natives/win32-aarch64
           mkdir -p jni-impl/src/main/resources/natives/darwin
-          cp temp-jni-natives/x64/libzstd.so jni-impl/src/main/resources/natives/linux-x86-64/libzstd.so
-          cp temp-jni-natives/ARM64/libzstd.so jni-impl/src/main/resources/natives/linux-aarch64/libzstd.so
-          cp temp-jni-natives/ARM/libzstd.so jni-impl/src/main/resources/natives/linux-arm/libzstd.so
-          cp temp-jni-natives/x64/libzstd.dll jni-impl/src/main/resources/natives/win32-x86-64/libzstd.dll
-          cp temp-jni-natives/ARM64/libzstd.dll jni-impl/src/main/resources/natives/win32-aarch64/libzstd.dll
-          cp temp-jni-natives/libzstd.dylib jni-impl/src/main/resources/natives/darwin/libzstd.dylib
+          cp temp-jni-natives/x64/libzstd-jni.so jni-impl/src/main/resources/natives/linux-x86-64/libzstd-jni.so
+          cp temp-jni-natives/ARM64/libzstd-jni.so jni-impl/src/main/resources/natives/linux-aarch64/libzstd-jni.so
+          cp temp-jni-natives/ARM/libzstd-jni.so jni-impl/src/main/resources/natives/linux-arm/libzstd-jni.so
+          cp temp-jni-natives/x64/libzstd-jni.dll jni-impl/src/main/resources/natives/win32-x86-64/libzstd-jni.dll
+          cp temp-jni-natives/ARM64/libzstd-jni.dll jni-impl/src/main/resources/natives/win32-aarch64/libzstd-jni.dll
+          cp temp-jni-natives/libzstd-jni.dylib jni-impl/src/main/resources/natives/darwin/libzstd-jni.dylib
 
       - name: Run tests
         env:

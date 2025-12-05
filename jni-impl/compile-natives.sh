@@ -21,5 +21,5 @@ mkdir build
 cd build || exit
 cmake .. -DCMAKE_BUILD_TYPE=Release
 cmake --build . -j 8
-mkdir -p ../../src/main/resources/natives/linux-"$jna_arch"
-cp ./libzstd-jni.so ../../src/main/resources/natives/linux-"$jna_arch"/libzstd.so
+mkdir -p ../../src/main/resources/dev/freya02/discord/zstd/jni/natives/linux-"$jna_arch"
+cp ./libzstd-jni.so ../../src/main/resources/dev/freya02/discord/zstd/jni/natives/linux-"$jna_arch"/libzstd-jni.so

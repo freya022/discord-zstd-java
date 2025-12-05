@@ -55,7 +55,7 @@ jobs:
           cd build-x64
           cmake $COMMON_JNI_NATIVES_CMAKE_FLAGS ..
           cmake --build . -j 4
-          cp libzstd-jni.so ../../../output/x64/libzstd.so
+          cp libzstd-jni.so ../../../output/x64/libzstd-jni.so
           cd ..
 
       - name: Publish Artifacts
@@ -103,7 +103,7 @@ jobs:
           mkdir -p natives/src/main/resources/natives/linux-x86-64
           mkdir -p jni-impl/src/main/resources/natives/linux-x86-64
           cp temp-zstd/x64/libzstd.so natives/src/main/resources/natives/linux-x86-64/libzstd.so
-          cp temp-jni-natives/x64/libzstd.so jni-impl/src/main/resources/natives/linux-x86-64/libzstd.so
+          cp temp-jni-natives/x64/libzstd-jni.so jni-impl/src/main/resources/natives/linux-x86-64/libzstd-jni.so
 
       - name: Run tests
         env:

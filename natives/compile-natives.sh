@@ -28,5 +28,5 @@ mkdir build
 cd build || exit
 cmake .. -DZSTD_BUILD_PROGRAMS=OFF -DZSTD_LEGACY_SUPPORT=OFF -DZSTD_BUILD_STATIC=OFF -DBUILD_SHARED_LIBS=ON -DZSTD_BUILD_DICTBUILDER=OFF -DZSTD_BUILD_COMPRESSION=OFF -DCMAKE_BUILD_TYPE=Release
 cmake --build . -j 8
-mkdir -p ../../../../src/main/resources/natives/linux-"$jna_arch"
-cp ./lib/libzstd.so ../../../../src/main/resources/natives/linux-"$jna_arch"/libzstd.so
+mkdir -p ../../../../src/main/resources/dev/freya02/discord/zstd/natives/linux-"$jna_arch"
+cp ./lib/libzstd.so ../../../../src/main/resources/dev/freya02/discord/zstd/natives/linux-"$jna_arch"/libzstd.so

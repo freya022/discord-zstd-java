@@ -1,9 +1,11 @@
 package dev.freya02.discord.zstd.jna;
 
 import dev.freya02.discord.zstd.TestChunks;
+import dev.freya02.discord.zstd.api.DiscordZstd;
 import dev.freya02.discord.zstd.api.DiscordZstdDecompressor;
 import dev.freya02.discord.zstd.api.DiscordZstdDecompressorFactory;
 import dev.freya02.discord.zstd.api.DiscordZstdNativesLoader;
+import dev.freya02.discord.zstd.internal.NativeUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +13,6 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ZstdJNATest {
 
@@ -24,7 +25,9 @@ public class ZstdJNATest {
 
     @Test
     public void test_decompression() throws IOException {
-        assertTrue(DiscordZstdNativesLoader.loadFromJar());
+        NativeUtil.System system = NativeUtil.getSystem();
+        String absoluteNativeResource = String.format("/dev/freya02/discord/zstd/natives/%s/libzstd.%s", system.platform, system.sharedLibraryExtension);
+        DiscordZstdNativesLoader.loadFromJar(absoluteNativeResource, DiscordZstd.class);
 
         DiscordZstdDecompressorFactory factory = new ZstdJNADecompressorFactoryProvider().get(DiscordZstdDecompressor.DEFAULT_BUFFER_SIZE);
         DiscordZstdDecompressor decompressor = factory.create();

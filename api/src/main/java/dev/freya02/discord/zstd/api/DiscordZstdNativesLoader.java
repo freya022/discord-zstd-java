@@ -52,48 +52,6 @@ public class DiscordZstdNativesLoader {
     }
 
     /**
-     * Loads the natives from this library's JAR.
-     *
-     * @throws UnsupportedOperationException
-     *         If the current platform (OS + architecture) is not supported by default
-     * @throws IOException
-     *         When the native extraction fails
-     *
-     * @return {@code true} if the natives were loaded, {@code false} if they already were
-     */
-    public static synchronized boolean loadFromJar() throws IOException {
-        if (init)
-            return false;
-
-        String architecture = NativeUtil.getCanonicalArchitecture(System.getProperty("os.arch"));
-        String osName = System.getProperty("os.name");
-
-        String platform;
-        String extension;
-        if (osName.startsWith("Linux")) {
-            if (!architecture.equals("x86-64") && !architecture.equals("aarch64") && !architecture.equals("arm"))
-                throw new IllegalStateException("Unsupported architecture: " + architecture);
-            platform = "linux-" + architecture;
-            extension = "so";
-        } else if (osName.startsWith("Mac") || osName.startsWith("Darwin")) {
-            platform = "darwin";
-            extension = "dylib";
-        } else if (osName.startsWith("Windows")) {
-            if (!architecture.equals("x86-64") && !architecture.equals("aarch64"))
-                throw new IllegalStateException("Unsupported architecture: " + architecture);
-            platform = "win32-" + architecture;
-            extension = "dll";
-        } else {
-            throw new UnsupportedOperationException("Unsupported OS: " + osName);
-        }
-
-        String resourcePath = String.format("/natives/%s/libzstd.%s", platform, extension);
-        Path nativePath = NativeUtil.copyNativeFromJar(resourcePath, DiscordZstdNativesLoader.class);
-        load(nativePath);
-        return true;
-    }
-
-    /**
      * Loads the natives using the provided path from the provided class.
      *
      * <p>Remember the resource path is relative to the provided class, unless prefixed with {@code /}.
@@ -120,7 +78,7 @@ public class DiscordZstdNativesLoader {
         if (clazz == null)
             throw new IllegalArgumentException("clazz is null");
 
-        Path nativePath = NativeUtil.copyNativeFromJar(resourcePath, clazz);
+        Path nativePath = IOUtil.copyNativeFromJar(resourcePath, clazz);
         load(nativePath);
         return true;
     }
