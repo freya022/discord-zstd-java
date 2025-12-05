@@ -1,9 +1,6 @@
 package dev.freya02.discord.zstd.ffm;
 
-import dev.freya02.discord.zstd.api.DiscordZstd;
-import dev.freya02.discord.zstd.api.ZstdContext;
-import dev.freya02.discord.zstd.api.ZstdDecompressorFactory;
-import dev.freya02.discord.zstd.api.ZstdNativesLoader;
+import dev.freya02.discord.zstd.api.*;
 import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +25,8 @@ public class DiscordZstdFFM implements DiscordZstd {
 
     @Override
     public ZstdDecompressorFactory createDecompressorFactory(int bufferSizeHint) {
+        if (bufferSizeHint < ZstdDecompressor.MIN_BUFFER_SIZE && bufferSizeHint != ZstdDecompressor.ZSTD_RECOMMENDED_BUFFER_SIZE)
+            throw new IllegalArgumentException("Buffer must be larger than or equal to " + ZstdDecompressor.MIN_BUFFER_SIZE + ", provided " + bufferSizeHint);
         return new ZstdFFMDecompressorFactory(bufferSizeHint);
     }
 }
