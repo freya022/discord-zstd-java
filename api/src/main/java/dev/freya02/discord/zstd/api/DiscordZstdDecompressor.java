@@ -9,7 +9,7 @@ import org.jspecify.annotations.NullMarked;
  * <p>Note: Instances are <b>not</b> thread safe, as there should be an instance per gateway connection, which uses 1 read thread.
  */
 @NullMarked
-public interface ZstdDecompressor {
+public interface DiscordZstdDecompressor {
     /**
      * The "recommended" buffer size as defined by {@code ZSTD_DStreamOutSize()} (128 KB as of v1.5.7). This isn't a default.
      *
@@ -57,7 +57,7 @@ public interface ZstdDecompressor {
      * @throws IllegalStateException
      *         If this decompressor is closed,
      *         or if the decompressor is an errored state and needs to be {@linkplain #reset() reset}
-     * @throws ZstdException
+     * @throws DiscordZstdException
      *         If Zstd was unable to decompress the data for any reason, if this exception occurs,
      *         the decompressor will be in an errored state and will need to be {@linkplain #reset() reset}
      */

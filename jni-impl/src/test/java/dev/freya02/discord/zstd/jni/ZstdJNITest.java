@@ -1,9 +1,10 @@
 package dev.freya02.discord.zstd.jni;
 
 import dev.freya02.discord.zstd.TestChunks;
-import dev.freya02.discord.zstd.api.ZstdDecompressor;
-import dev.freya02.discord.zstd.api.ZstdDecompressorFactory;
-import dev.freya02.discord.zstd.api.ZstdNativesLoader;
+import dev.freya02.discord.zstd.api.DiscordZstdContext;
+import dev.freya02.discord.zstd.api.DiscordZstdDecompressor;
+import dev.freya02.discord.zstd.api.DiscordZstdDecompressorFactory;
+import dev.freya02.discord.zstd.api.DiscordZstdProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -18,15 +19,14 @@ public class ZstdJNITest {
     private static List<TestChunks.Chunk> chunks;
 
     @BeforeAll
-    public static void setup() throws IOException {
+    public static void setup() {
         chunks = TestChunks.get(TestChunks.Compression.ZSTD);
-        ZstdNativesLoader.loadFromJar();
     }
 
     @Test
     public void test_decompression() {
-        ZstdDecompressorFactory factory = new ZstdJNIDecompressorFactoryProvider().get(ZstdDecompressor.DEFAULT_BUFFER_SIZE);
-        ZstdDecompressor decompressor = factory.create();
+        DiscordZstdDecompressorFactory factory = DiscordZstdProvider.get().createDecompressorFactory(DiscordZstdDecompressor.DEFAULT_BUFFER_SIZE);
+        DiscordZstdDecompressor decompressor = factory.create();
         for (TestChunks.Chunk chunk : chunks) {
             final byte[] actual = decompressor.decompress(chunk.getCompressed());
             final byte[] expected = chunk.getDecompressed();
@@ -36,7 +36,7 @@ public class ZstdJNITest {
 
     @Test
     public void test_input_stream() throws IOException {
-        final ZstdJNIContext context = new ZstdJNIContext();
+        DiscordZstdContext context = DiscordZstdProvider.get().createContext();
         for (TestChunks.Chunk chunk : chunks) {
             try (InputStream stream = context.createInputStream(chunk.getCompressed())) {
                 final byte[] actual = stream.readAllBytes();

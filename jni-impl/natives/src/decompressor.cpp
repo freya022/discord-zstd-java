@@ -3,28 +3,26 @@
 #include <vector>
 #include <zstd.h>
 
-jlong Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_createDStream(
-    JNIEnv *, jclass) {
+jlong DiscordZstdJNIDecompressor_createDStream(JNIEnv *, jclass) {
     return reinterpret_cast<jlong>(ZSTD_createDStream());
 }
 
-jlong Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_freeDStream(
-    JNIEnv *, jclass, jlong zds) {
+jlong DiscordZstdJNIDecompressor_freeDStream(JNIEnv *, jclass, jlong zds) {
     return ZSTD_freeDStream(reinterpret_cast<ZSTD_DStream *>(zds));
 }
 
-jint Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_DStreamOutSize(
-    JNIEnv *, jclass) {
+jint DiscordZstdJNIDecompressor_DStreamOutSize(JNIEnv *, jclass) {
     return ZSTD_DStreamOutSize();
 }
 
-jlong Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_initDStream(
-    JNIEnv *, jclass, jlong zds) {
+jlong DiscordZstdJNIDecompressor_initDStream(JNIEnv *, jclass, jlong zds) {
     return ZSTD_initDStream(reinterpret_cast<ZSTD_DStream *>(zds));
 }
 
-jbyteArray Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_decompressMessage(
-    JNIEnv *env, jclass, jlong zds, jbyteArray bufferArray, jbyteArray inputArray) {
+jbyteArray DiscordZstdJNIDecompressor_decompressMessage(JNIEnv *env, jclass,
+                                                        jlong zds,
+                                                        jbyteArray bufferArray,
+                                                        jbyteArray inputArray) {
     ZSTD_outBuffer output;
     output.dst = env->GetPrimitiveArrayCritical(bufferArray, nullptr);
     output.size = env->GetArrayLength(bufferArray);
@@ -62,7 +60,7 @@ jbyteArray Java_dev_freya02_discord_zstd_jni_ZstdJNIDecompressor_decompressMessa
             env->ReleasePrimitiveArrayCritical(inputArray, const_cast<void *>(input.src), 0);
 
             const auto errorName = ZSTD_getErrorName(result);
-            const auto exceptionClass = env->FindClass("dev/freya02/discord/zstd/api/ZstdException");
+            const auto exceptionClass = env->FindClass("dev/freya02/discord/zstd/api/DiscordZstdException");
             env->ThrowNew(exceptionClass, errorName);
 
             return nullptr;
