@@ -12,7 +12,7 @@ import java.nio.file.Path;
  * to the <b>absolute</b> path of the native library.
  */
 @NullMarked
-public class ZstdNativesLoader {
+public class DiscordZstdNativesLoader {
     private static boolean init = false;
 
     /**
@@ -41,6 +41,8 @@ public class ZstdNativesLoader {
         //noinspection ConstantValue
         if (path == null)
             throw new IllegalArgumentException("path is null");
+        if (!path.isAbsolute())
+            throw new IllegalArgumentException("path is not absolute: " + path);
 
         final String pathStr = path.toAbsolutePath().toString();
         System.setProperty("zstd.lib", pathStr);
@@ -86,7 +88,7 @@ public class ZstdNativesLoader {
         }
 
         String resourcePath = String.format("/natives/%s/libzstd.%s", platform, extension);
-        Path nativePath = NativeUtil.copyNativeFromJar(resourcePath, ZstdNativesLoader.class);
+        Path nativePath = NativeUtil.copyNativeFromJar(resourcePath, DiscordZstdNativesLoader.class);
         load(nativePath);
         return true;
     }

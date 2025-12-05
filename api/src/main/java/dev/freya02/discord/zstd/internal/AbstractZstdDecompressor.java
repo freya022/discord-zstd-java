@@ -1,10 +1,10 @@
 package dev.freya02.discord.zstd.internal;
 
-import dev.freya02.discord.zstd.api.ZstdDecompressor;
+import dev.freya02.discord.zstd.api.DiscordZstdDecompressor;
 
 import java.util.List;
 
-public abstract class AbstractZstdDecompressor implements ZstdDecompressor {
+public abstract class AbstractZstdDecompressor implements DiscordZstdDecompressor {
 
     protected AbstractZstdDecompressor() {
     }

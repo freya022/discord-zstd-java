@@ -1,8 +1,8 @@
 package dev.freya02.discord.zstd;
 
-import dev.freya02.discord.zstd.api.ZstdDecompressor;
-import dev.freya02.discord.zstd.api.ZstdDecompressorFactory;
-import dev.freya02.discord.zstd.api.ZstdNativesLoader;
+import dev.freya02.discord.zstd.api.DiscordZstdDecompressor;
+import dev.freya02.discord.zstd.api.DiscordZstdDecompressorFactory;
+import dev.freya02.discord.zstd.api.DiscordZstdNativesLoader;
 import dev.freya02.discord.zstd.jni.DiscordZstdJNI;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.IOUtil;
@@ -26,7 +26,7 @@ import java.util.zip.InflaterOutputStream;
 @Fork(1)
 public class ZstdDecompressorBenchmark {
 
-    private static final int ZSTD_BUFFER_SIZE = ZstdDecompressor.DEFAULT_BUFFER_SIZE;
+    private static final int ZSTD_BUFFER_SIZE = DiscordZstdDecompressor.DEFAULT_BUFFER_SIZE;
     private static final int ZLIB_BUFFER_SIZE = 2048; // JDA default
 
     @State(Scope.Benchmark)
@@ -34,12 +34,12 @@ public class ZstdDecompressorBenchmark {
         @Param({"jni"})
         private String impl;
 
-        public ZstdDecompressor decompressor;
+        public DiscordZstdDecompressor decompressor;
 
         @Setup
         public void setup() throws IOException {
-            ZstdNativesLoader.loadFromJar();
-            ZstdDecompressorFactory factory = switch (impl) {
+            DiscordZstdNativesLoader.loadFromJar();
+            DiscordZstdDecompressorFactory factory = switch (impl) {
                 case "jni" -> new DiscordZstdJNI().createDecompressorFactory(ZSTD_BUFFER_SIZE);
                 default -> throw new AssertionError("Unknown implementation: " + impl);
             };

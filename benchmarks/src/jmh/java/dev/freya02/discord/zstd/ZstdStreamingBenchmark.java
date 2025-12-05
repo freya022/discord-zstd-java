@@ -1,7 +1,7 @@
 package dev.freya02.discord.zstd;
 
-import dev.freya02.discord.zstd.api.ZstdContext;
-import dev.freya02.discord.zstd.api.ZstdNativesLoader;
+import dev.freya02.discord.zstd.api.DiscordZstdContext;
+import dev.freya02.discord.zstd.api.DiscordZstdNativesLoader;
 import dev.freya02.discord.zstd.jni.DiscordZstdJNI;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.IOUtil;
@@ -30,11 +30,11 @@ public class ZstdStreamingBenchmark {
         @Param({"jni"})
         private String impl;
 
-        public ZstdContext context;
+        public DiscordZstdContext context;
 
         @Setup
         public void setup() throws IOException {
-            ZstdNativesLoader.loadFromJar();
+            DiscordZstdNativesLoader.loadFromJar();
             context = switch (impl) {
                 case "jni" -> new DiscordZstdJNI().createContext();
                 default -> throw new AssertionError("Unknown implementation: " + impl);

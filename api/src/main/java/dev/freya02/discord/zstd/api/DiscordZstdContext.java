@@ -5,7 +5,7 @@ import org.jspecify.annotations.NullMarked;
 import java.io.InputStream;
 
 @NullMarked
-public interface ZstdContext {
+public interface DiscordZstdContext {
     void close();
 
     void reset();

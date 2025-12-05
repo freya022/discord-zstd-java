@@ -1,18 +1,18 @@
 package dev.freya02.discord.zstd.jni;
 
-import dev.freya02.discord.zstd.api.ZstdContext;
+import dev.freya02.discord.zstd.api.DiscordZstdContext;
 import org.jspecify.annotations.NullMarked;
 
 import java.io.InputStream;
 
 @NullMarked
-class ZstdJNIContext implements ZstdContext {
+class DiscordZstdJNIContext implements DiscordZstdContext {
     private final long zds;
 
     private boolean invalidated = false;
     private boolean closed = false;
 
-    public ZstdJNIContext() {
+    public DiscordZstdJNIContext() {
         this.zds = createDStream();
     }
 
@@ -47,7 +47,7 @@ class ZstdJNIContext implements ZstdContext {
 
     @Override
     public InputStream createInputStream(byte[] input) {
-        return new ZstdJNIInputStream(this, zds, input);
+        return new DiscordZstdJNIInputStream(this, zds, input);
     }
 
     private static native long createDStream();

@@ -1,20 +1,20 @@
 package dev.freya02.discord.zstd.ffm;
 
-import dev.freya02.discord.zstd.api.ZstdContext;
-import dev.freya02.discord.zstd.api.ZstdException;
+import dev.freya02.discord.zstd.api.DiscordZstdContext;
+import dev.freya02.discord.zstd.api.DiscordZstdException;
 import org.jspecify.annotations.NullMarked;
 
 import java.io.InputStream;
 import java.lang.foreign.MemorySegment;
 
 @NullMarked
-class ZstdFFMContext implements ZstdContext {
+class DiscordZstdFFMContext implements DiscordZstdContext {
     private final MemorySegment stream;
 
     private boolean invalidated = false;
     private boolean closed = false;
 
-    public ZstdFFMContext() {
+    public DiscordZstdFFMContext() {
         this.stream = Zstd.ZSTD_createDStream();
     }
 
@@ -38,7 +38,7 @@ class ZstdFFMContext implements ZstdContext {
 
     @Override
     public InputStream createInputStream(byte[] input) {
-        return new ZstdFFMInputStream(this, input);
+        return new DiscordZstdFFMInputStream(this, input);
     }
 
     public void decompress(MemorySegment dst, long dstCapacity, MemorySegment dstPos, MemorySegment src, long srcSize, MemorySegment srcPos) {
@@ -54,8 +54,8 @@ class ZstdFFMContext implements ZstdContext {
         }
     }
 
-    public ZstdException createException(String message) {
+    public DiscordZstdException createException(String message) {
         invalidated = true;
-        return new ZstdException(message);
+        return new DiscordZstdException(message);
     }
 }

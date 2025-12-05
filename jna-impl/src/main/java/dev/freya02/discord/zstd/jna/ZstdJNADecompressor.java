@@ -1,7 +1,7 @@
 package dev.freya02.discord.zstd.jna;
 
 import com.sun.jna.Pointer;
-import dev.freya02.discord.zstd.api.ZstdException;
+import dev.freya02.discord.zstd.api.DiscordZstdException;
 import dev.freya02.discord.zstd.internal.AbstractZstdDecompressor;
 import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
@@ -122,8 +122,8 @@ public class ZstdJNADecompressor extends AbstractZstdDecompressor {
         }
     }
 
-    private ZstdException createException(String message) {
+    private DiscordZstdException createException(String message) {
         invalidated = true;
-        return new ZstdException(message);
+        return new DiscordZstdException(message);
     }
 }

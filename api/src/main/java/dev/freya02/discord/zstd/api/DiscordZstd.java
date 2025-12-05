@@ -8,26 +8,26 @@ import java.io.InputStream;
 public interface DiscordZstd {
     // TODO rename type
     /**
-     * Creates a new {@link ZstdContext}.
+     * Creates a new {@link DiscordZstdContext}.
      * <br>This is used to keep track of streaming decompression after each input is consumed via an {@link InputStream}.
      *
-     * @return A new {@link ZstdContext} instance
+     * @return A new {@link DiscordZstdContext} instance
      */
-    ZstdContext createContext();
+    DiscordZstdContext createContext();
 
     // TODO rename type
     /**
-     * Creates a new {@link ZstdDecompressorFactory} with the provided decompression buffer size.
+     * Creates a new {@link DiscordZstdDecompressorFactory} with the provided decompression buffer size.
      *
      * @param  bufferSizeHint
      *         A hint for the size of the buffer used for decompression,
-     *         must be larger than {@value ZstdDecompressor#MIN_BUFFER_SIZE} or be equal to {@value ZstdDecompressor#ZSTD_RECOMMENDED_BUFFER_SIZE}.
+     *         must be larger than {@value DiscordZstdDecompressor#MIN_BUFFER_SIZE} or be equal to {@value DiscordZstdDecompressor#ZSTD_RECOMMENDED_BUFFER_SIZE}.
      *         Typically, bigger buffers mean less decompression loops, it does not change inputs or outputs
      *
      * @throws IllegalArgumentException
-     *         If {@code bufferSize} is less than {@value ZstdDecompressor#MIN_BUFFER_SIZE} and not {@value ZstdDecompressor#ZSTD_RECOMMENDED_BUFFER_SIZE}
+     *         If {@code bufferSize} is less than {@value DiscordZstdDecompressor#MIN_BUFFER_SIZE} and not {@value DiscordZstdDecompressor#ZSTD_RECOMMENDED_BUFFER_SIZE}
      *
-     * @return A new {@link ZstdDecompressorFactory} instance
+     * @return A new {@link DiscordZstdDecompressorFactory} instance
      */
-    ZstdDecompressorFactory createDecompressorFactory(int bufferSizeHint);
+    DiscordZstdDecompressorFactory createDecompressorFactory(int bufferSizeHint);
 }

@@ -6,17 +6,17 @@ Context::Context(ZSTD_DCtx *zds) {
     this->srcPos = 0;
 }
 
-jlong ZstdJNIInputStream_newContext(JNIEnv *, jclass, const jlong zdsPtr) {
+jlong DiscordZstdJNIInputStream_newContext(JNIEnv *, jclass, const jlong zdsPtr) {
     const auto zds = reinterpret_cast<ZSTD_DCtx *>(zdsPtr);
     return reinterpret_cast<jlong>(new Context(zds));
 }
 
-void ZstdJNIInputStream_freeContext(JNIEnv *, jclass, const jlong ctxPtr) {
+void DiscordZstdJNIInputStream_freeContext(JNIEnv *, jclass, const jlong ctxPtr) {
     const auto ctx = reinterpret_cast<Context *>(ctxPtr);
     delete ctx;
 }
 
-jlong ZstdJNIInputStream_inflate0(JNIEnv *env, jclass,
+jlong DiscordZstdJNIInputStream_inflate0(JNIEnv *env, jclass,
                                   const jlong ctxPtr,
                                   jbyteArray srcJ, const jlong srcSize,
                                   jbyteArray dstJ, const jlong dstOff, const jlong dstSize) {
@@ -54,7 +54,7 @@ jlong ZstdJNIInputStream_inflate0(JNIEnv *env, jclass,
 
     if (ZSTD_isError(result)) {
         const auto errorName = ZSTD_getErrorName(result);
-        const auto exceptionClass = env->FindClass("dev/freya02/discord/zstd/api/ZstdException");
+        const auto exceptionClass = env->FindClass("dev/freya02/discord/zstd/api/DiscordZstdException");
         env->ThrowNew(exceptionClass, errorName);
 
         return -1;

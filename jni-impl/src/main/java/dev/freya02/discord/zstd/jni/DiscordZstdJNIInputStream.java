@@ -1,15 +1,15 @@
 package dev.freya02.discord.zstd.jni;
 
-import dev.freya02.discord.zstd.api.ZstdException;
+import dev.freya02.discord.zstd.api.DiscordZstdException;
 import org.jspecify.annotations.NullMarked;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 @NullMarked
-class ZstdJNIInputStream extends InputStream {
+class DiscordZstdJNIInputStream extends InputStream {
 
-    private final ZstdJNIContext context;
+    private final DiscordZstdJNIContext context;
     private final long nativeContextPtr;
 
     private final byte[] input;
@@ -17,7 +17,7 @@ class ZstdJNIInputStream extends InputStream {
 
     private boolean closed = false;
 
-    protected ZstdJNIInputStream(ZstdJNIContext context, long zds, byte[] input) {
+    protected DiscordZstdJNIInputStream(DiscordZstdJNIContext context, long zds, byte[] input) {
         this.context = context;
         this.nativeContextPtr = newContext(zds);
         this.input = input;
@@ -51,7 +51,7 @@ class ZstdJNIInputStream extends InputStream {
 
         try {
             return (int) inflate0(nativeContextPtr, input, inputSize, b, off, len);
-        } catch (ZstdException e) {
+        } catch (DiscordZstdException e) {
             context.invalidate();
             throw new RuntimeException(e);
         }

@@ -1,10 +1,10 @@
 package dev.freya02.discord.zstd.jni;
 
 import dev.freya02.discord.zstd.TestChunks;
+import dev.freya02.discord.zstd.api.DiscordZstdContext;
+import dev.freya02.discord.zstd.api.DiscordZstdDecompressor;
+import dev.freya02.discord.zstd.api.DiscordZstdDecompressorFactory;
 import dev.freya02.discord.zstd.api.DiscordZstdProvider;
-import dev.freya02.discord.zstd.api.ZstdContext;
-import dev.freya02.discord.zstd.api.ZstdDecompressor;
-import dev.freya02.discord.zstd.api.ZstdDecompressorFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -25,8 +25,8 @@ public class ZstdJNITest {
 
     @Test
     public void test_decompression() {
-        ZstdDecompressorFactory factory = DiscordZstdProvider.get().createDecompressorFactory(ZstdDecompressor.DEFAULT_BUFFER_SIZE);
-        ZstdDecompressor decompressor = factory.create();
+        DiscordZstdDecompressorFactory factory = DiscordZstdProvider.get().createDecompressorFactory(DiscordZstdDecompressor.DEFAULT_BUFFER_SIZE);
+        DiscordZstdDecompressor decompressor = factory.create();
         for (TestChunks.Chunk chunk : chunks) {
             final byte[] actual = decompressor.decompress(chunk.getCompressed());
             final byte[] expected = chunk.getDecompressed();
@@ -36,7 +36,7 @@ public class ZstdJNITest {
 
     @Test
     public void test_input_stream() throws IOException {
-        ZstdContext context = DiscordZstdProvider.get().createContext();
+        DiscordZstdContext context = DiscordZstdProvider.get().createContext();
         for (TestChunks.Chunk chunk : chunks) {
             try (InputStream stream = context.createInputStream(chunk.getCompressed())) {
                 final byte[] actual = stream.readAllBytes();

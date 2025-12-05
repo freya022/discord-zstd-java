@@ -10,9 +10,9 @@ import java.lang.foreign.ValueLayout;
 import java.util.Objects;
 
 @NullMarked
-class ZstdFFMInputStream extends InputStream {
+class DiscordZstdFFMInputStream extends InputStream {
 
-    private final ZstdFFMContext context;
+    private final DiscordZstdFFMContext context;
 
     private final MemorySegment input;
     private final long inputSize;
@@ -22,7 +22,7 @@ class ZstdFFMInputStream extends InputStream {
 
     private boolean closed = false;
 
-    protected ZstdFFMInputStream(ZstdFFMContext context, byte[] input) {
+    protected DiscordZstdFFMInputStream(DiscordZstdFFMContext context, byte[] input) {
         this.context = context;
 
         final Arena arena = Arena.ofAuto();

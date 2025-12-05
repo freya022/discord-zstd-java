@@ -15,18 +15,18 @@ public class DiscordZstdFFM implements DiscordZstd {
         LOGGER.debug("Using FFM implementation of discord-zstd-java");
 
         // Load natives if they weren't already
-        ZstdNativesLoader.loadFromJar();
+        DiscordZstdNativesLoader.loadFromJar();
     }
 
     @Override
-    public ZstdContext createContext() {
-        return new ZstdFFMContext();
+    public DiscordZstdContext createContext() {
+        return new DiscordZstdFFMContext();
     }
 
     @Override
-    public ZstdDecompressorFactory createDecompressorFactory(int bufferSizeHint) {
-        if (bufferSizeHint < ZstdDecompressor.MIN_BUFFER_SIZE && bufferSizeHint != ZstdDecompressor.ZSTD_RECOMMENDED_BUFFER_SIZE)
-            throw new IllegalArgumentException("Buffer must be larger than or equal to " + ZstdDecompressor.MIN_BUFFER_SIZE + ", provided " + bufferSizeHint);
-        return new ZstdFFMDecompressorFactory(bufferSizeHint);
+    public DiscordZstdDecompressorFactory createDecompressorFactory(int bufferSizeHint) {
+        if (bufferSizeHint < DiscordZstdDecompressor.MIN_BUFFER_SIZE && bufferSizeHint != DiscordZstdDecompressor.ZSTD_RECOMMENDED_BUFFER_SIZE)
+            throw new IllegalArgumentException("Buffer must be larger than or equal to " + DiscordZstdDecompressor.MIN_BUFFER_SIZE + ", provided " + bufferSizeHint);
+        return new DiscordZstdFFMDecompressorFactory(bufferSizeHint);
     }
 }

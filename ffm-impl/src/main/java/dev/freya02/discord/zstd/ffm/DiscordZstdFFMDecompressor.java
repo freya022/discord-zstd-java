@@ -1,6 +1,6 @@
 package dev.freya02.discord.zstd.ffm;
 
-import dev.freya02.discord.zstd.api.ZstdException;
+import dev.freya02.discord.zstd.api.DiscordZstdException;
 import dev.freya02.discord.zstd.internal.AbstractZstdDecompressor;
 import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
@@ -14,9 +14,9 @@ import java.util.Arrays;
 import java.util.List;
 
 @NullMarked
-class ZstdFFMDecompressor extends AbstractZstdDecompressor {
+class DiscordZstdFFMDecompressor extends AbstractZstdDecompressor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ZstdFFMDecompressor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DiscordZstdFFMDecompressor.class);
 
     private final MemorySegment stream;
     private final MemorySegment dstSegment;
@@ -26,7 +26,7 @@ class ZstdFFMDecompressor extends AbstractZstdDecompressor {
     private boolean invalidated = false;
     private boolean closed = false;
 
-    protected ZstdFFMDecompressor(int bufferSizeHint)
+    protected DiscordZstdFFMDecompressor(int bufferSizeHint)
     {
         this.stream = Zstd.ZSTD_createDStream();
 
@@ -138,8 +138,8 @@ class ZstdFFMDecompressor extends AbstractZstdDecompressor {
         return segment.get(ValueLayout.JAVA_LONG, 0);
     }
 
-    private ZstdException createException(String message) {
+    private DiscordZstdException createException(String message) {
         invalidated = true;
-        return new ZstdException(message);
+        return new DiscordZstdException(message);
     }
 }
