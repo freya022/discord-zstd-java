@@ -1,26 +1,26 @@
 #include <memory>
 #include <streaming.hpp>
 
-Context::Context(ZSTD_DCtx *zds) {
+State::State(ZSTD_DCtx *zds) {
     this->zds = zds;
     this->srcPos = 0;
 }
 
-jlong DiscordZstdJNIInputStream_newContext(JNIEnv *, jclass, const jlong zdsPtr) {
+jlong DiscordZstdJNIInputStream_newState(JNIEnv *, jclass, const jlong zdsPtr) {
     const auto zds = reinterpret_cast<ZSTD_DCtx *>(zdsPtr);
-    return reinterpret_cast<jlong>(new Context(zds));
+    return reinterpret_cast<jlong>(new State(zds));
 }
 
-void DiscordZstdJNIInputStream_freeContext(JNIEnv *, jclass, const jlong ctxPtr) {
-    const auto ctx = reinterpret_cast<Context *>(ctxPtr);
+void DiscordZstdJNIInputStream_freeState(JNIEnv *, jclass, const jlong ctxPtr) {
+    const auto ctx = reinterpret_cast<State *>(ctxPtr);
     delete ctx;
 }
 
 jlong DiscordZstdJNIInputStream_inflate0(JNIEnv *env, jclass,
-                                  const jlong ctxPtr,
-                                  jbyteArray srcJ, const jlong srcSize,
-                                  jbyteArray dstJ, const jlong dstOff, const jlong dstSize) {
-    const auto ctx = reinterpret_cast<Context *>(ctxPtr);
+                                         const jlong statePtr,
+                                         jbyteArray srcJ, const jlong srcSize,
+                                         jbyteArray dstJ, const jlong dstOff, const jlong dstSize) {
+    const auto state = reinterpret_cast<State *>(statePtr);
 
     const auto src = env->GetPrimitiveArrayCritical(srcJ, nullptr);
     const auto dst = env->GetPrimitiveArrayCritical(dstJ, nullptr);
@@ -28,7 +28,7 @@ jlong DiscordZstdJNIInputStream_inflate0(JNIEnv *env, jclass,
     ZSTD_inBuffer inBuffer = {
         .src = src,
         .size = static_cast<size_t>(srcSize),
-        .pos = ctx->srcPos,
+        .pos = state->srcPos,
     };
 
     ZSTD_outBuffer outBuffer = {
@@ -39,8 +39,8 @@ jlong DiscordZstdJNIInputStream_inflate0(JNIEnv *env, jclass,
 
     const auto previousInputOffset = inBuffer.pos;
 
-    const auto result = ZSTD_decompressStream(ctx->zds, &outBuffer, &inBuffer);
-    ctx->srcPos = inBuffer.pos;
+    const auto result = ZSTD_decompressStream(state->zds, &outBuffer, &inBuffer);
+    state->srcPos = inBuffer.pos;
 
     env->ReleasePrimitiveArrayCritical(srcJ, src, JNI_ABORT);
     env->ReleasePrimitiveArrayCritical(dstJ, dst, 0);

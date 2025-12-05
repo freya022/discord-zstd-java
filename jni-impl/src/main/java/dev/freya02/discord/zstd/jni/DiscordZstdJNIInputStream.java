@@ -10,7 +10,7 @@ import java.io.InputStream;
 class DiscordZstdJNIInputStream extends InputStream {
 
     private final DiscordZstdJNIContext context;
-    private final long nativeContextPtr;
+    private final long nativeStatePtr;
 
     private final byte[] input;
     private final long inputSize;
@@ -19,7 +19,7 @@ class DiscordZstdJNIInputStream extends InputStream {
 
     protected DiscordZstdJNIInputStream(DiscordZstdJNIContext context, long zds, byte[] input) {
         this.context = context;
-        this.nativeContextPtr = newContext(zds);
+        this.nativeStatePtr = newState(zds);
         this.input = input;
         this.inputSize = input.length;
     }
@@ -28,7 +28,7 @@ class DiscordZstdJNIInputStream extends InputStream {
     public void close() {
         if (closed)
             return;
-        freeContext(nativeContextPtr);
+        freeState(nativeStatePtr);
 
         closed = true;
     }
@@ -50,16 +50,16 @@ class DiscordZstdJNIInputStream extends InputStream {
             return 0;
 
         try {
-            return (int) inflate0(nativeContextPtr, input, inputSize, b, off, len);
+            return (int) inflate0(nativeStatePtr, input, inputSize, b, off, len);
         } catch (DiscordZstdException e) {
             context.invalidate();
             throw new RuntimeException(e);
         }
     }
 
-    private static native long newContext(long zdsPtr);
+    private static native long newState(long zdsPtr);
 
-    private static native long freeContext(long ctxPtr);
+    private static native long freeState(long statePtr);
 
     private static native long inflate0(long ctxPtr,
                                         byte[] src, long srcSize,
