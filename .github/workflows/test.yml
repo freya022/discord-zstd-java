@@ -102,8 +102,8 @@ jobs:
         run: |
           mkdir -p natives/src/main/resources/natives/linux-x86-64
           mkdir -p jni-impl/src/main/resources/natives/linux-x86-64
-          cp temp-zstd/x64/libzstd.so natives/src/main/resources/natives/linux-x86-64/libzstd.so
-          cp temp-jni-natives/x64/libzstd-jni.so jni-impl/src/main/resources/natives/linux-x86-64/libzstd-jni.so
+          cp temp-zstd/x64/libzstd.so natives/src/main/resources/dev/freya02/discord/zstd/natives/linux-x86-64/libzstd.so
+          cp temp-jni-natives/x64/libzstd-jni.so jni-impl/src/main/resources/dev/freya02/discord/zstd/jni/natives/linux-x86-64/libzstd-jni.so
 
       - name: Run tests
         env:
