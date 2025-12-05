@@ -2,7 +2,7 @@ package dev.freya02.discord.zstd;
 
 import dev.freya02.discord.zstd.api.ZstdContext;
 import dev.freya02.discord.zstd.api.ZstdNativesLoader;
-import dev.freya02.discord.zstd.jni.ZstdJNIContextFactoryProvider;
+import dev.freya02.discord.zstd.jni.DiscordZstdJNI;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import org.jetbrains.annotations.Nullable;
@@ -35,11 +35,10 @@ public class ZstdStreamingBenchmark {
         @Setup
         public void setup() throws IOException {
             ZstdNativesLoader.loadFromJar();
-            var factory = switch (impl) {
-                case "jni" -> new ZstdJNIContextFactoryProvider().get();
+            context = switch (impl) {
+                case "jni" -> new DiscordZstdJNI().createContext();
                 default -> throw new AssertionError("Unknown implementation: " + impl);
             };
-            context = factory.create();
         }
 
         @TearDown

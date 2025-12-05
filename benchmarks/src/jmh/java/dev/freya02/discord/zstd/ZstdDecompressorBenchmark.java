@@ -3,7 +3,7 @@ package dev.freya02.discord.zstd;
 import dev.freya02.discord.zstd.api.ZstdDecompressor;
 import dev.freya02.discord.zstd.api.ZstdDecompressorFactory;
 import dev.freya02.discord.zstd.api.ZstdNativesLoader;
-import dev.freya02.discord.zstd.jni.ZstdJNIDecompressorFactoryProvider;
+import dev.freya02.discord.zstd.jni.DiscordZstdJNI;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import org.openjdk.jmh.annotations.*;
@@ -40,7 +40,7 @@ public class ZstdDecompressorBenchmark {
         public void setup() throws IOException {
             ZstdNativesLoader.loadFromJar();
             ZstdDecompressorFactory factory = switch (impl) {
-                case "jni" -> new ZstdJNIDecompressorFactoryProvider().get(ZSTD_BUFFER_SIZE);
+                case "jni" -> new DiscordZstdJNI().createDecompressorFactory(ZSTD_BUFFER_SIZE);
                 default -> throw new AssertionError("Unknown implementation: " + impl);
             };
             decompressor = factory.create();
