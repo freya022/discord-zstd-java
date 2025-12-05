@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 
 @NullMarked
-public class ZstdJNIDecompressor extends AbstractZstdDecompressor {
+class ZstdJNIDecompressor extends AbstractZstdDecompressor {
 
     private static final Logger LOG = LoggerFactory.getLogger(ZstdJNIDecompressor.class);
 

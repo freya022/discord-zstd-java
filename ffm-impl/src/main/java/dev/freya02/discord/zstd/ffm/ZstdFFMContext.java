@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.lang.foreign.MemorySegment;
 
 @NullMarked
-public class ZstdFFMContext implements ZstdContext {
+class ZstdFFMContext implements ZstdContext {
     private final MemorySegment stream;
 
     private boolean invalidated = false;

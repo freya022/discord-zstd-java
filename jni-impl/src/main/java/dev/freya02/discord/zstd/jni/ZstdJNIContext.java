@@ -6,7 +6,7 @@ import org.jspecify.annotations.NullMarked;
 import java.io.InputStream;
 
 @NullMarked
-public class ZstdJNIContext implements ZstdContext {
+class ZstdJNIContext implements ZstdContext {
     private final long zds;
 
     private boolean invalidated = false;

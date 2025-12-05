@@ -6,7 +6,7 @@ import dev.freya02.discord.zstd.api.ZstdNativesLoader;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
-public class ZstdJNIDecompressorFactory implements ZstdDecompressorFactory {
+class ZstdJNIDecompressorFactory implements ZstdDecompressorFactory {
 
     private final int bufferSize;
 

@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @NullMarked
-public class ZstdJNIInputStream extends InputStream {
+class ZstdJNIInputStream extends InputStream {
 
     private final ZstdJNIContext context;
     private final long nativeContextPtr;

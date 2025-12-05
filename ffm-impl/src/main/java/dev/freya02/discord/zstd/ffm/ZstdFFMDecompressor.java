@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @NullMarked
-public class ZstdFFMDecompressor extends AbstractZstdDecompressor {
+class ZstdFFMDecompressor extends AbstractZstdDecompressor {
 
     private static final Logger LOG = LoggerFactory.getLogger(ZstdFFMDecompressor.class);
 

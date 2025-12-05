@@ -39,7 +39,7 @@ import static java.lang.foreign.ValueLayout.JAVA_BYTE;
  *                               the return value is a suggested next input size (just a hint for better latency)
  *                               that will never request more than the remaining content of the compressed frame.
  */
-public final class Zstd {
+final class Zstd {
 
     private Zstd() {
         // Should not be called directly

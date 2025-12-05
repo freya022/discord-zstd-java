@@ -10,7 +10,7 @@ import java.lang.foreign.ValueLayout;
 import java.util.Objects;
 
 @NullMarked
-public class ZstdFFMInputStream extends InputStream {
+class ZstdFFMInputStream extends InputStream {
 
     private final ZstdFFMContext context;
 
