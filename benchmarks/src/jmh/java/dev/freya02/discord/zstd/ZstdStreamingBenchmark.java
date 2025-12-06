@@ -34,7 +34,6 @@ public class ZstdStreamingBenchmark {
 
         @Setup
         public void setup() throws IOException {
-            DiscordZstdNativesLoader.loadFromJar();
             context = switch (impl) {
                 case "jni" -> new DiscordZstdJNI().createContext();
                 default -> throw new AssertionError("Unknown implementation: " + impl);

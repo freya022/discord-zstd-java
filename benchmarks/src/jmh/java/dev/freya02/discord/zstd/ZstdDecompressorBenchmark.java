@@ -38,7 +38,6 @@ public class ZstdDecompressorBenchmark {
 
         @Setup
         public void setup() throws IOException {
-            DiscordZstdNativesLoader.loadFromJar();
             DiscordZstdDecompressorFactory factory = switch (impl) {
                 case "jni" -> new DiscordZstdJNI().createDecompressorFactory(ZSTD_BUFFER_SIZE);
                 default -> throw new AssertionError("Unknown implementation: " + impl);
