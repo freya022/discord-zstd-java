@@ -12,6 +12,6 @@ dependencies {
 }
 
 jmh {
-    profilers = listOf("gc")
+    profilers = listOf("gc", "perfnorm")
     resultFormat = "JSON"
 }
