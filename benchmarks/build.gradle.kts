@@ -6,10 +6,12 @@ plugins {
 
 dependencies {
     jmh(libs.jda)
+    jmh(libs.jackson.databind)
     jmh(project(":jni-impl"))
     jmh(project(":test-data"))
 }
 
 jmh {
     profilers = listOf("gc")
+    resultFormat = "JSON"
 }
