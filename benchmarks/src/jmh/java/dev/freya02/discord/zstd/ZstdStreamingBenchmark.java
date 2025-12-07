@@ -1,7 +1,6 @@
 package dev.freya02.discord.zstd;
 
 import dev.freya02.discord.zstd.api.DiscordZstdContext;
-import dev.freya02.discord.zstd.api.DiscordZstdNativesLoader;
 import dev.freya02.discord.zstd.jni.DiscordZstdJNI;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.IOUtil;
@@ -32,12 +31,15 @@ public class ZstdStreamingBenchmark {
 
         public DiscordZstdContext context;
 
+        public byte[] buf;
+
         @Setup
         public void setup() throws IOException {
             context = switch (impl) {
                 case "jni" -> new DiscordZstdJNI().createContext();
                 default -> throw new AssertionError("Unknown implementation: " + impl);
             };
+            buf = new byte[8192];
         }
 
         @TearDown
@@ -67,15 +69,35 @@ public class ZstdStreamingBenchmark {
         }
     }
 
+    @Benchmark
+    public void zstdNoDeser(ZstdDecompressorState decompressorState, ZstdChunksState chunksState, Blackhole blackhole) throws IOException {
+        var context = decompressorState.context;
+        context.reset();
+        for (TestChunks.Chunk chunk : chunksState.chunks) {
+            try (InputStream inputStream = context.createInputStream(chunk.getCompressed())) {
+                while (true) {
+                    var read = inputStream.read(decompressorState.buf);
+                    blackhole.consume(decompressorState.buf);
+                    if (read <= 0) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
 
 
     @State(Scope.Benchmark)
     public static class ZlibDecompressorState {
         public ZlibStreamingDecompressor decompressor;
 
+        public byte[] buf;
+
         @Setup
         public void setup() {
             decompressor = new ZlibStreamingDecompressor();
+            buf = new byte[8192];
         }
     }
 
@@ -98,6 +120,30 @@ public class ZstdStreamingBenchmark {
         for (TestChunks.Chunk chunk : chunksState.chunks) {
             try (InputStream inputStream = decompressor.createInputStream(chunk.getCompressed())) {
                 blackhole.consume(DataObject.fromJson(inputStream));
+            }
+        }
+    }
+
+    @Benchmark
+    public void zlibNoDeser(ZlibDecompressorState decompressorState, ZlibChunksState chunksState, Blackhole blackhole) throws IOException {
+        var decompressor = decompressorState.decompressor;
+        decompressor.reset();
+        var bytes = decompressorState.buf;
+        // Can't make a benchmark per-message (so we can see scaling based on message sizes
+        //  as this uses a streaming decompressor, meaning this requires previous inputs
+        for (TestChunks.Chunk chunk : chunksState.chunks) {
+            int currentlyDecompressedSize = 0;
+            int expectedDecompressedSize = chunk.getDecompressed().length;
+            try (InputStream inputStream = decompressor.createInputStream(chunk.getCompressed())) {
+                // This is pretty stupid, #available() returns 1 even when there is no output to be read,
+                // we want to avoid handling EOFException as it may be slow and does not represent real world usage,
+                // checking `read < buf.length` is not viable since it can store data internally and returned in the next call.
+                // So, we instead decompress until we have the known decompressed data length.
+                do {
+                    var read = inputStream.read(bytes);
+                    currentlyDecompressedSize += read;
+                    blackhole.consume(bytes);
+                } while (currentlyDecompressedSize < expectedDecompressedSize);
             }
         }
     }

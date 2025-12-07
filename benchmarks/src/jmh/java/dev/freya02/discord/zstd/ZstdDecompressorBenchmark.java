@@ -2,7 +2,6 @@ package dev.freya02.discord.zstd;
 
 import dev.freya02.discord.zstd.api.DiscordZstdDecompressor;
 import dev.freya02.discord.zstd.api.DiscordZstdDecompressorFactory;
-import dev.freya02.discord.zstd.api.DiscordZstdNativesLoader;
 import dev.freya02.discord.zstd.jni.DiscordZstdJNI;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.IOUtil;
@@ -71,6 +70,16 @@ public class ZstdDecompressorBenchmark {
             blackhole.consume(DataObject.fromJson(decompressor.decompress(chunk.getCompressed())));
     }
 
+    @Benchmark
+    public void zstdNoDeser(ZstdDecompressorState decompressorState, ZstdChunksState chunksState, Blackhole blackhole) {
+        var decompressor = decompressorState.decompressor;
+        decompressor.reset();
+        // Can't make a benchmark per-message (so we can see scaling based on message sizes
+        //  as this uses a streaming decompressor, meaning this requires previous inputs
+        for (TestChunks.Chunk chunk : chunksState.chunks)
+            blackhole.consume(decompressor.decompress(chunk.getCompressed()));
+    }
+
 
 
     @State(Scope.Benchmark)
@@ -101,6 +110,17 @@ public class ZstdDecompressorBenchmark {
         //  as this uses a streaming decompressor, meaning this requires previous inputs
         for (TestChunks.Chunk chunk : chunksState.chunks) {
             blackhole.consume(DataObject.fromJson(decompressor.decompress(chunk.getCompressed())));
+        }
+    }
+
+    @Benchmark
+    public void zlibNoDeser(ZlibDecompressorState decompressorState, ZlibChunksState chunksState, Blackhole blackhole) throws DataFormatException {
+        var decompressor = decompressorState.decompressor;
+        decompressor.reset();
+        // Can't make a benchmark per-message (so we can see scaling based on message sizes
+        //  as this uses a streaming decompressor, meaning this requires previous inputs
+        for (TestChunks.Chunk chunk : chunksState.chunks) {
+            blackhole.consume(decompressor.decompress(chunk.getCompressed()));
         }
     }
 
