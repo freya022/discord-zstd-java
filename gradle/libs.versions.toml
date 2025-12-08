@@ -8,6 +8,7 @@ junit = "org.junit.jupiter:junit-jupiter:5.14.0"
 junit-launcher = "org.junit.platform:junit-platform-launcher:1.14.0"
 slf4j = "org.slf4j:slf4j-api:2.0.17"
 logback-classic = "ch.qos.logback:logback-classic:1.5.21"
+zstd-jni = "com.github.luben:zstd-jni:1.5.7-6"
 
 [bundles]
 junit = [

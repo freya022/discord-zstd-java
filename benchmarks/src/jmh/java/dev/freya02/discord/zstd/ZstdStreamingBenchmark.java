@@ -25,6 +25,16 @@ import java.util.zip.InflaterInputStream;
 public class ZstdStreamingBenchmark {
 
     @State(Scope.Benchmark)
+    public static class ShardsState {
+        public List<List<TestChunks.Chunk>> shards;
+
+        @Setup
+        public void setup() {
+            shards = TestChunks.get();
+        }
+    }
+
+    @State(Scope.Benchmark)
     public static class ZstdDecompressorState {
         @Param({"jni"})
         private String impl;
@@ -48,38 +58,32 @@ public class ZstdStreamingBenchmark {
         }
     }
 
-    @State(Scope.Benchmark)
-    public static class ZstdChunksState {
-        public List<TestChunks.Chunk> chunks;
-
-        @Setup
-        public void setup() {
-            chunks = TestChunks.get(TestChunks.Compression.ZSTD);
-        }
-    }
-
     @Benchmark
-    public void zstd(ZstdDecompressorState decompressorState, ZstdChunksState chunksState, Blackhole blackhole) throws IOException {
+    public void zstd(ZstdDecompressorState decompressorState, ShardsState shardsState, Blackhole blackhole) throws IOException {
         var context = decompressorState.context;
-        context.reset();
-        for (TestChunks.Chunk chunk : chunksState.chunks) {
-            try (InputStream inputStream = context.createInputStream(chunk.getCompressed())) {
-                blackhole.consume(DataObject.fromJson(inputStream));
+        for (List<TestChunks.Chunk> shard : shardsState.shards) {
+            context.reset();
+            for (TestChunks.Chunk chunk : shard) {
+                try (InputStream inputStream = context.createInputStream(chunk.zstdCompressed())) {
+                    blackhole.consume(DataObject.fromJson(inputStream));
+                }
             }
         }
     }
 
     @Benchmark
-    public void zstdNoDeser(ZstdDecompressorState decompressorState, ZstdChunksState chunksState, Blackhole blackhole) throws IOException {
+    public void zstdNoDeser(ZstdDecompressorState decompressorState, ShardsState shardsState, Blackhole blackhole) throws IOException {
         var context = decompressorState.context;
-        context.reset();
-        for (TestChunks.Chunk chunk : chunksState.chunks) {
-            try (InputStream inputStream = context.createInputStream(chunk.getCompressed())) {
-                while (true) {
-                    var read = inputStream.read(decompressorState.buf);
-                    blackhole.consume(decompressorState.buf);
-                    if (read <= 0) {
-                        break;
+        for (List<TestChunks.Chunk> shard : shardsState.shards) {
+            context.reset();
+            for (TestChunks.Chunk chunk : shard) {
+                try (InputStream inputStream = context.createInputStream(chunk.zstdCompressed())) {
+                    while (true) {
+                        var read = inputStream.read(decompressorState.buf);
+                        blackhole.consume(decompressorState.buf);
+                        if (read <= 0) {
+                            break;
+                        }
                     }
                 }
             }
@@ -101,49 +105,39 @@ public class ZstdStreamingBenchmark {
         }
     }
 
-    @State(Scope.Benchmark)
-    public static class ZlibChunksState {
-        public List<TestChunks.Chunk> chunks;
-
-        @Setup
-        public void setup() {
-            chunks = TestChunks.get(TestChunks.Compression.ZLIB);
-        }
-    }
-
     @Benchmark
-    public void zlib(ZlibDecompressorState decompressorState, ZlibChunksState chunksState, Blackhole blackhole) throws IOException {
+    public void zlib(ZlibDecompressorState decompressorState, ShardsState shardsState, Blackhole blackhole) throws IOException {
         var decompressor = decompressorState.decompressor;
-        decompressor.reset();
-        // Can't make a benchmark per-message (so we can see scaling based on message sizes
-        //  as this uses a streaming decompressor, meaning this requires previous inputs
-        for (TestChunks.Chunk chunk : chunksState.chunks) {
-            try (InputStream inputStream = decompressor.createInputStream(chunk.getCompressed())) {
-                blackhole.consume(DataObject.fromJson(inputStream));
+        for (List<TestChunks.Chunk> shard : shardsState.shards) {
+            decompressor.reset();
+            for (TestChunks.Chunk chunk : shard) {
+                try (InputStream inputStream = decompressor.createInputStream(chunk.zlibCompressed())) {
+                    blackhole.consume(DataObject.fromJson(inputStream));
+                }
             }
         }
     }
 
     @Benchmark
-    public void zlibNoDeser(ZlibDecompressorState decompressorState, ZlibChunksState chunksState, Blackhole blackhole) throws IOException {
+    public void zlibNoDeser(ZlibDecompressorState decompressorState, ShardsState shardsState, Blackhole blackhole) throws IOException {
         var decompressor = decompressorState.decompressor;
-        decompressor.reset();
         var bytes = decompressorState.buf;
-        // Can't make a benchmark per-message (so we can see scaling based on message sizes
-        //  as this uses a streaming decompressor, meaning this requires previous inputs
-        for (TestChunks.Chunk chunk : chunksState.chunks) {
-            int currentlyDecompressedSize = 0;
-            int expectedDecompressedSize = chunk.getDecompressed().length;
-            try (InputStream inputStream = decompressor.createInputStream(chunk.getCompressed())) {
-                // This is pretty stupid, #available() returns 1 even when there is no output to be read,
-                // we want to avoid handling EOFException as it may be slow and does not represent real world usage,
-                // checking `read < buf.length` is not viable since it can store data internally and returned in the next call.
-                // So, we instead decompress until we have the known decompressed data length.
-                do {
-                    var read = inputStream.read(bytes);
-                    currentlyDecompressedSize += read;
-                    blackhole.consume(bytes);
-                } while (currentlyDecompressedSize < expectedDecompressedSize);
+        for (List<TestChunks.Chunk> shard : shardsState.shards) {
+            decompressor.reset();
+            for (TestChunks.Chunk chunk : shard) {
+                int currentlyDecompressedSize = 0;
+                int expectedDecompressedSize = chunk.decompressed().length;
+                try (InputStream inputStream = decompressor.createInputStream(chunk.zlibCompressed())) {
+                    // This is pretty stupid, #available() returns 1 even when there is no output to be read,
+                    // we want to avoid handling EOFException as it may be slow and does not represent real world usage,
+                    // checking `read < buf.length` is not viable since it can store data internally and returned in the next call.
+                    // So, we instead decompress until we have the known decompressed data length.
+                    do {
+                        var read = inputStream.read(bytes);
+                        currentlyDecompressedSize += read;
+                        blackhole.consume(bytes);
+                    } while (currentlyDecompressedSize < expectedDecompressedSize);
+                }
             }
         }
     }

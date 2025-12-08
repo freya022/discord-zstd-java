@@ -16,11 +16,11 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 public class ZstdJNATest {
 
-    private static List<TestChunks.Chunk> chunks;
+    private static List<List<TestChunks.Chunk>> shards;
 
     @BeforeAll
     public static void setup() {
-        chunks = TestChunks.get(TestChunks.Compression.ZSTD);
+        shards = TestChunks.get();
     }
 
     @Test
@@ -30,11 +30,13 @@ public class ZstdJNATest {
         DiscordZstdNativesLoader.loadFromJar(absoluteNativeResource, DiscordZstd.class);
 
         DiscordZstdDecompressorFactory factory = new ZstdJNADecompressorFactoryProvider().get(DiscordZstdDecompressor.DEFAULT_BUFFER_SIZE);
-        DiscordZstdDecompressor decompressor = factory.create();
-        for (TestChunks.Chunk chunk : chunks) {
-            final byte[] actual = decompressor.decompress(chunk.getCompressed());
-            final byte[] expected = chunk.getDecompressed();
-            assertArrayEquals(expected, actual);
+        for (List<TestChunks.Chunk> shard : shards) {
+            DiscordZstdDecompressor decompressor = factory.create();
+            for (TestChunks.Chunk chunk : shard) {
+                final byte[] actual = decompressor.decompress(chunk.zstdCompressed());
+                final byte[] expected = chunk.decompressed();
+                assertArrayEquals(expected, actual);
+            }
         }
     }
 }

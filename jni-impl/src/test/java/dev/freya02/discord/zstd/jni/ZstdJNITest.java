@@ -16,35 +16,39 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 public class ZstdJNITest {
 
-    private static List<TestChunks.Chunk> chunks;
+    private static List<List<TestChunks.Chunk>> shards;
 
     @BeforeAll
     public static void setup() {
-        chunks = TestChunks.get(TestChunks.Compression.ZSTD);
+        shards = TestChunks.get();
     }
 
     @Test
     public void test_decompression() {
         DiscordZstdDecompressorFactory factory = DiscordZstdProvider.get().createDecompressorFactory(DiscordZstdDecompressor.DEFAULT_BUFFER_SIZE);
-        DiscordZstdDecompressor decompressor = factory.create();
-        for (TestChunks.Chunk chunk : chunks) {
-            final byte[] actual = decompressor.decompress(chunk.getCompressed());
-            final byte[] expected = chunk.getDecompressed();
-            assertArrayEquals(expected, actual);
+        for (List<TestChunks.Chunk> shard : shards) {
+            DiscordZstdDecompressor decompressor = factory.create();
+            for (TestChunks.Chunk chunk : shard) {
+                final byte[] actual = decompressor.decompress(chunk.zstdCompressed());
+                final byte[] expected = chunk.decompressed();
+                assertArrayEquals(expected, actual);
+            }
+            decompressor.close();
         }
     }
 
     @Test
     public void test_input_stream() throws IOException {
-        DiscordZstdContext context = DiscordZstdProvider.get().createContext();
-        for (TestChunks.Chunk chunk : chunks) {
-            try (InputStream stream = context.createInputStream(chunk.getCompressed())) {
-                final byte[] actual = stream.readAllBytes();
-                final byte[] expected = chunk.getDecompressed();
-                assertArrayEquals(expected, actual);
+        for (List<TestChunks.Chunk> shard : shards) {
+            DiscordZstdContext context = DiscordZstdProvider.get().createContext();
+            for (TestChunks.Chunk chunk : shard) {
+                try (InputStream stream = context.createInputStream(chunk.zstdCompressed())) {
+                    final byte[] actual = stream.readAllBytes();
+                    final byte[] expected = chunk.decompressed();
+                    assertArrayEquals(expected, actual);
+                }
             }
+            context.close();
         }
-
-        context.close();
     }
 }

@@ -10,3 +10,5 @@ dependencies {
 tasks.withType<Test> {
     enabled = false
 }
+
+val generateTestData by tasks.registering(TestDataGeneratorTask::class)

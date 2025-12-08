@@ -11,4 +11,11 @@ repositories {
 dependencies {
     implementation(gradleApi())
     implementation(libs.jreleaser)
+    implementation(libs.zstd.jni)
+}
+
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
+    }
 }

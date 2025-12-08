@@ -29,6 +29,16 @@ public class ZstdDecompressorBenchmark {
     private static final int ZLIB_BUFFER_SIZE = 2048; // JDA default
 
     @State(Scope.Benchmark)
+    public static class ShardsState {
+        public List<List<TestChunks.Chunk>> shards;
+
+        @Setup
+        public void setup() {
+            shards = TestChunks.get();
+        }
+    }
+
+    @State(Scope.Benchmark)
     public static class ZstdDecompressorState {
         @Param({"jni"})
         private String impl;
@@ -50,34 +60,28 @@ public class ZstdDecompressorBenchmark {
         }
     }
 
-    @State(Scope.Benchmark)
-    public static class ZstdChunksState {
-        public List<TestChunks.Chunk> chunks;
-
-        @Setup
-        public void setup() {
-            chunks = TestChunks.get(TestChunks.Compression.ZSTD);
+    @Benchmark
+    public void zstd(ZstdDecompressorState decompressorState, ShardsState shardsState, Blackhole blackhole) {
+        var decompressor = decompressorState.decompressor;
+        for (List<TestChunks.Chunk> shard : shardsState.shards) {
+            decompressor.reset();
+            // Can't make a benchmark per-message (so we can see scaling based on message sizes
+            //  as this uses a streaming decompressor, meaning this requires previous inputs
+            for (TestChunks.Chunk chunk : shard)
+                blackhole.consume(DataObject.fromJson(decompressor.decompress(chunk.zstdCompressed())));
         }
     }
 
     @Benchmark
-    public void zstd(ZstdDecompressorState decompressorState, ZstdChunksState chunksState, Blackhole blackhole) {
+    public void zstdNoDeser(ZstdDecompressorState decompressorState, ShardsState shardsState, Blackhole blackhole) {
         var decompressor = decompressorState.decompressor;
-        decompressor.reset();
-        // Can't make a benchmark per-message (so we can see scaling based on message sizes
-        //  as this uses a streaming decompressor, meaning this requires previous inputs
-        for (TestChunks.Chunk chunk : chunksState.chunks)
-            blackhole.consume(DataObject.fromJson(decompressor.decompress(chunk.getCompressed())));
-    }
-
-    @Benchmark
-    public void zstdNoDeser(ZstdDecompressorState decompressorState, ZstdChunksState chunksState, Blackhole blackhole) {
-        var decompressor = decompressorState.decompressor;
-        decompressor.reset();
-        // Can't make a benchmark per-message (so we can see scaling based on message sizes
-        //  as this uses a streaming decompressor, meaning this requires previous inputs
-        for (TestChunks.Chunk chunk : chunksState.chunks)
-            blackhole.consume(decompressor.decompress(chunk.getCompressed()));
+        for (List<TestChunks.Chunk> shard : shardsState.shards) {
+            decompressor.reset();
+            // Can't make a benchmark per-message (so we can see scaling based on message sizes
+            //  as this uses a streaming decompressor, meaning this requires previous inputs
+            for (TestChunks.Chunk chunk : shard)
+                blackhole.consume(decompressor.decompress(chunk.zstdCompressed()));
+        }
     }
 
 
@@ -92,35 +96,29 @@ public class ZstdDecompressorBenchmark {
         }
     }
 
-    @State(Scope.Benchmark)
-    public static class ZlibChunksState {
-        public List<TestChunks.Chunk> chunks;
-
-        @Setup
-        public void setup() {
-            chunks = TestChunks.get(TestChunks.Compression.ZLIB);
+    @Benchmark
+    public void zlib(ZlibDecompressorState decompressorState, ShardsState shardsState, Blackhole blackhole) throws DataFormatException {
+        var decompressor = decompressorState.decompressor;
+        for (List<TestChunks.Chunk> shard : shardsState.shards) {
+            decompressor.reset();
+            // Can't make a benchmark per-message (so we can see scaling based on message sizes
+            //  as this uses a streaming decompressor, meaning this requires previous inputs
+            for (TestChunks.Chunk chunk : shard) {
+                blackhole.consume(DataObject.fromJson(decompressor.decompress(chunk.zlibCompressed())));
+            }
         }
     }
 
     @Benchmark
-    public void zlib(ZlibDecompressorState decompressorState, ZlibChunksState chunksState, Blackhole blackhole) throws DataFormatException {
+    public void zlibNoDeser(ZlibDecompressorState decompressorState, ShardsState shardsState, Blackhole blackhole) throws DataFormatException {
         var decompressor = decompressorState.decompressor;
-        decompressor.reset();
-        // Can't make a benchmark per-message (so we can see scaling based on message sizes
-        //  as this uses a streaming decompressor, meaning this requires previous inputs
-        for (TestChunks.Chunk chunk : chunksState.chunks) {
-            blackhole.consume(DataObject.fromJson(decompressor.decompress(chunk.getCompressed())));
-        }
-    }
-
-    @Benchmark
-    public void zlibNoDeser(ZlibDecompressorState decompressorState, ZlibChunksState chunksState, Blackhole blackhole) throws DataFormatException {
-        var decompressor = decompressorState.decompressor;
-        decompressor.reset();
-        // Can't make a benchmark per-message (so we can see scaling based on message sizes
-        //  as this uses a streaming decompressor, meaning this requires previous inputs
-        for (TestChunks.Chunk chunk : chunksState.chunks) {
-            blackhole.consume(decompressor.decompress(chunk.getCompressed()));
+        for (List<TestChunks.Chunk> shard : shardsState.shards) {
+            decompressor.reset();
+            // Can't make a benchmark per-message (so we can see scaling based on message sizes
+            //  as this uses a streaming decompressor, meaning this requires previous inputs
+            for (TestChunks.Chunk chunk : shard) {
+                blackhole.consume(decompressor.decompress(chunk.zlibCompressed()));
+            }
         }
     }
 
