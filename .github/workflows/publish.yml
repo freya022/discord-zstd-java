@@ -197,8 +197,8 @@ jobs:
 
       - name: Run tests
         env:
-          TEST_DATA_ZSTD_KEY: ${{ secrets.TEST_DATA_ZSTD_KEY }}
-          TEST_DATA_ZSTD_PARAMETERS: ${{ secrets.TEST_DATA_ZSTD_PARAMETERS }}
+          TEST_DATA_KEY: ${{ secrets.TEST_DATA_KEY }}
+          TEST_DATA_PARAMETERS: ${{ secrets.TEST_DATA_PARAMETERS }}
         run: ./gradlew test --no-configuration-cache
 
       - name: Publish to Maven Central
