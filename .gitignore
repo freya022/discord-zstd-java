@@ -8,3 +8,5 @@ build
 # Secret key and algorithm parameters for test data decryption
 **/chunks/Key.bin
 **/chunks/Parameters.bin
+
+gateway-chunks-zlib
