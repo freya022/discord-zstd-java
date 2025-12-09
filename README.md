@@ -5,7 +5,7 @@
 
 # discord-zstd-java
 
-Modular support for Zstandard streaming decompression, for JVM Discord API wrappers.
+Lightweight modular support for Zstandard streaming decompression, for JVM Discord API wrappers.
 
 ## Supported platforms
 - Linux: x86-64, aarch64, armhf
