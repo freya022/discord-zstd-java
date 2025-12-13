@@ -14,11 +14,12 @@ import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import kotlin.io.path.*
+import kotlin.streams.asSequence
 
 private const val rootDirName = "gateway-chunks-zlib"
 
-private val chunkFolderRegex = Regex("""shard-\d+""")
-private val chunkFileRegex = Regex("""chunk-\d+\.bin.zlib""")
+private val chunkFolderRegex = Regex("""shard-(\d+)""")
+private val chunkFileRegex = Regex("""chunk-(\d+)\.bin.zlib""")
 
 @DisableCachingByDefault
 abstract class TestDataGeneratorTask : DefaultTask() {
@@ -43,7 +44,16 @@ abstract class TestDataGeneratorTask : DefaultTask() {
 
         Files.walk(inputFolder, 1)
             .filter { it != inputFolder }
-            .sorted()
+            .asSequence()
+            .onEach { chunkFolder ->
+                require(chunkFolder.name.matches(chunkFolderRegex)) {
+                    "Chunk folder name must match ${chunkFolderRegex.pattern}"
+                }
+            }
+            .sortedBy { chunkFolder ->
+                val shardId = chunkFolderRegex.matchEntire(chunkFolder.name)!!.groupValues[1]
+                shardId.toInt()
+            }
             .forEach { chunkFolder ->
                 processChunkFolder(chunkFolder)
             }
@@ -53,10 +63,6 @@ abstract class TestDataGeneratorTask : DefaultTask() {
     }
 
     private fun processChunkFolder(chunkFolder: Path) {
-        require(chunkFolder.name.matches(chunkFolderRegex)) {
-            "Chunk folder name must match ${chunkFolderRegex.pattern}"
-        }
-
         val chunkOutputFolder = rootOutputFolder.resolve(chunkFolder.name)
         chunkOutputFolder.createDirectory()
 
@@ -73,7 +79,16 @@ abstract class TestDataGeneratorTask : DefaultTask() {
         context(chunkOutputFolder, inflater, compressedStream, zstdStream) {
             Files.walk(chunkFolder, 1)
                 .filter { it != chunkFolder }
-                .sorted()
+                .asSequence()
+                .onEach { chunkFile ->
+                    require(chunkFile.name.matches(chunkFileRegex)) {
+                        "Chunk file name must match ${chunkFileRegex.pattern}"
+                    }
+                }
+                .sortedBy { chunkFile ->
+                    val chunkNumber = chunkFileRegex.matchEntire(chunkFile.name)!!.groupValues[1]
+                    chunkNumber.toInt()
+                }
                 .forEach { chunkFile ->
                     processChunkFile(chunkFile)
                 }
@@ -82,10 +97,6 @@ abstract class TestDataGeneratorTask : DefaultTask() {
 
     context(chunkOutputFolder: Path, inflater: Inflater, compressedStream: ByteArrayOutputStream, zstdStream: ZstdOutputStream)
     private fun processChunkFile(chunkFile: Path) {
-        require(chunkFile.name.matches(chunkFileRegex)) {
-            "Chunk file name must match ${chunkFileRegex.pattern}"
-        }
-
         val zlibCompressedChunk = chunkFile.readBytes()
         val decompressedChunk = decompressChunk(zlibCompressedChunk)
         val zstdCompressedChunk = compressChunkToZstd(decompressedChunk)
@@ -109,7 +120,7 @@ abstract class TestDataGeneratorTask : DefaultTask() {
     }
 
     // zstd-jni doesn't support reusing the streaming compression context...
-// so we have to keep the output stream across chunks
+    // so we have to keep the output stream across chunks
     context(compressedStream: ByteArrayOutputStream, zstdStream: ZstdOutputStream)
     private fun compressChunkToZstd(decompressedChunk: ByteArray): ByteArray {
         compressedStream.reset()
