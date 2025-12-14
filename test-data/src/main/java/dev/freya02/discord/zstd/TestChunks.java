@@ -12,18 +12,32 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.AlgorithmParameters;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 @NullMarked
 public class TestChunks {
 
-    public static final Pattern shardFolderPattern = Pattern.compile("shard-\\d+");
-    public static final Pattern decompressedChunkPattern = Pattern.compile("chunk-\\d+\\.bin");
+    public static final Pattern shardFolderPattern = Pattern.compile("shard-(\\d+)");
+    public static final Pattern decompressedChunkPattern = Pattern.compile("chunk-(\\d+)\\.bin");
+
+    private static final Comparator<Path> shardFolderComparator = Comparator.comparingInt(path -> {
+        Matcher matcher = shardFolderPattern.matcher(path.getFileName().toString());
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Invalid shard folder path: " + path);
+        }
+        return Integer.parseInt(matcher.group(1));
+    });
+
+    private static final Comparator<Path> decompressedChunkComparator = Comparator.comparingInt(path -> {
+        Matcher matcher = decompressedChunkPattern.matcher(path.getFileName().toString());
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Invalid decompressed chunk path: " + path);
+        }
+        return Integer.parseInt(matcher.group(1));
+    });
 
     public static List<List<Chunk>> get() {
         final EncryptedTestData encryptedTestData = getEncryptedTestData();
@@ -71,10 +85,10 @@ public class TestChunks {
 
             List<List<Chunk>> shards = new ArrayList<>();
             try (Stream<Path> shardDirStream = Files.walk(chunksDirectory, 1)) {
-                for (Path shardDir : shardDirStream.filter(TestChunks::isShardFolder).sorted().toList()) {
+                for (Path shardDir : shardDirStream.filter(TestChunks::isShardFolder).sorted(shardFolderComparator).toList()) {
                     List<Chunk> chunks = new ArrayList<>();
                     try (Stream<Path> chunkStream = Files.walk(shardDir, 1)) {
-                        for (Path path : chunkStream.filter(TestChunks::isDecompressedChunk).sorted().toList()) {
+                        for (Path path : chunkStream.filter(TestChunks::isDecompressedChunk).sorted(decompressedChunkComparator).toList()) {
                             byte[] decompressed = Files.readAllBytes(path);
                             byte[] zlibCompressed = Files.readAllBytes(path.resolveSibling(path.getFileName().toString() + ".zlib"));
                             byte[] zstdCompressed = Files.readAllBytes(path.resolveSibling(path.getFileName().toString() + ".zstd"));
