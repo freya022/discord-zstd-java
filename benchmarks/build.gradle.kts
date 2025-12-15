@@ -14,4 +14,5 @@ dependencies {
 jmh {
     profilers = listOf("gc", "perfnorm")
     resultFormat = "JSON"
+    humanOutputFile = project.file("${project.layout.buildDirectory.asFile.get()}/reports/jmh/human.txt")
 }
