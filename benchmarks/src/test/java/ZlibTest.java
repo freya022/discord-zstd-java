@@ -28,15 +28,13 @@ public class ZlibTest {
             for (int chunkId = 0; chunkId < chunks.size(); chunkId++) {
                 TestChunks.Chunk chunk = chunks.get(chunkId);
 
-                int currentlyDecompressedSize = 0;
-                int expectedDecompressedSize = chunk.decompressed().length;
                 try (InputStream inputStream = decompressor.createInputStream(chunk.zlibCompressed())) {
-                    do {
+                    while (true) {
                         var read = inputStream.read(bytes);
                         if (read == -1) {
                             break;
                         }
-                    } while (currentlyDecompressedSize < expectedDecompressedSize);
+                    };
                 } catch (Exception e) {
                     throw new RuntimeException("Failed on chunk %d (total %d) of shard %d (total %d)".formatted(chunkId, chunks.size(), shardId, shards.size()), e);
                 }
