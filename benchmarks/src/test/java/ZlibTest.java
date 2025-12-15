@@ -1,16 +1,17 @@
 import dev.freya02.discord.zstd.TestChunks;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
 import java.util.zip.InflaterOutputStream;
 
 public class ZlibTest {
@@ -121,7 +122,32 @@ public class ZlibTest {
                 System.arraycopy(arr, 0, data, 0, data.length);
                 flushBuffer = null;
             }
-            return new InflaterInputStream(new ByteArrayInputStream(data), inflater);
+            byte[] finalData = data;
+            return new InputStream() {
+                {
+                    inflater.setInput(finalData);
+                }
+
+                @Override
+                public int read() throws IOException {
+                    byte[] buf = new byte[1];
+                    return read(buf, 0, 1);
+                }
+
+                @Override
+                public int read(@NotNull byte[] b, int off, int len) throws IOException {
+                    if (off > 0) throw new AssertionError("off > 0");
+                    if (inflater.finished()) throw new AssertionError("Inflater has finished somehow");
+                    if (inflater.needsInput()) throw new AssertionError("Inflater needs input???");
+                    if (inflater.needsDictionary()) throw new AssertionError("Inflater needs dict???");
+
+                    try {
+                        return inflater.inflate(b, off, len);
+                    } catch (DataFormatException e) {
+                        throw new IOException("Unable to decompress, %d read, %d written %d remaining".formatted(inflater.getBytesRead(), inflater.getBytesWritten(), inflater.getRemaining()), e);
+                    }
+                }
+            };
         }
     }
 }
