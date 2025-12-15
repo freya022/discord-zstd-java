@@ -8,14 +8,14 @@ import org.jetbrains.annotations.Nullable;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
+import java.util.zip.ZipException;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
@@ -199,7 +199,52 @@ public class ZstdStreamingBenchmark {
                 System.arraycopy(arr, 0, data, 0, data.length);
                 flushBuffer = null;
             }
-            return new InflaterInputStream(new ByteArrayInputStream(data), inflater);
+            return new FixedInflaterInputStream(inflater, data);
+        }
+    }
+
+    private static class FixedInflaterInputStream extends InputStream {
+        private final Inflater inflater;
+
+        private boolean closed = false;
+        private boolean invalidated = false;
+
+        public FixedInflaterInputStream(Inflater inflater, byte[] data) {
+            this.inflater = inflater;
+            inflater.setInput(data);
+        }
+
+        @Override
+        public void close() {
+            closed = true;
+        }
+
+        @Override
+        public int read() throws IOException {
+            byte[] buf = new byte[1];
+            return read(buf, 0, 1);
+        }
+
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            if (closed)
+                throw new IOException("Stream is closed");
+            if (invalidated)
+                throw new IllegalStateException("Decompressor is in an errored state and needs to be reset");
+            if ((b.length | off | len) < 0 || len > b.length - off)
+                throw new IndexOutOfBoundsException();
+            if (len == 0)
+                return 0;
+            if (inflater.needsInput())
+                return -1;
+
+            try {
+                return inflater.inflate(b, off, len);
+            } catch (DataFormatException e) {
+                invalidated = true;
+                String s = e.getMessage();
+                throw new ZipException(s != null ? s : "Invalid ZLIB data format");
+            }
         }
     }
 }
