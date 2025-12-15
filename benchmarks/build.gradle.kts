@@ -5,10 +5,18 @@ plugins {
 }
 
 dependencies {
+    testImplementation(libs.bundles.junit)
+    testImplementation(project(":test-data"))
+    testImplementation(libs.jda)
+
     jmh(libs.jda)
     jmh(libs.jackson.databind)
     jmh(project(":jni-impl"))
     jmh(project(":test-data"))
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
 jmh {
