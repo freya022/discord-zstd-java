@@ -122,21 +122,30 @@ public class ZstdStreamingBenchmark {
     public void zlibNoDeser(ZlibDecompressorState decompressorState, ShardsState shardsState, Blackhole blackhole) throws IOException {
         var decompressor = decompressorState.decompressor;
         var bytes = decompressorState.buf;
-        for (List<TestChunks.Chunk> shard : shardsState.shards) {
+        List<List<TestChunks.Chunk>> shards = shardsState.shards;
+        for (int shardId = 0; shardId < shards.size(); shardId++) {
+            List<TestChunks.Chunk> shard = shards.get(shardId);
             decompressor.reset();
-            for (TestChunks.Chunk chunk : shard) {
-                int currentlyDecompressedSize = 0;
-                int expectedDecompressedSize = chunk.decompressed().length;
-                try (InputStream inputStream = decompressor.createInputStream(chunk.zlibCompressed())) {
-                    // This is pretty stupid, #available() returns 1 even when there is no output to be read,
-                    // we want to avoid handling EOFException as it may be slow and does not represent real world usage,
-                    // checking `read < buf.length` is not viable since it can store data internally and returned in the next call.
-                    // So, we instead decompress until we have the known decompressed data length.
-                    do {
-                        var read = inputStream.read(bytes);
-                        currentlyDecompressedSize += read;
-                        blackhole.consume(bytes);
-                    } while (currentlyDecompressedSize < expectedDecompressedSize);
+
+            for (int chunkId = 0; chunkId < shard.size(); chunkId++) {
+                TestChunks.Chunk chunk = shard.get(chunkId);
+
+                try {
+                    int currentlyDecompressedSize = 0;
+                    int expectedDecompressedSize = chunk.decompressed().length;
+                    try (InputStream inputStream = decompressor.createInputStream(chunk.zlibCompressed())) {
+                        // This is pretty stupid, #available() returns 1 even when there is no output to be read,
+                        // we want to avoid handling EOFException as it may be slow and does not represent real world usage,
+                        // checking `read < buf.length` is not viable since it can store data internally and returned in the next call.
+                        // So, we instead decompress until we have the known decompressed data length.
+                        do {
+                            var read = inputStream.read(bytes);
+                            currentlyDecompressedSize += read;
+                            blackhole.consume(bytes);
+                        } while (currentlyDecompressedSize < expectedDecompressedSize);
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed on chunk %d of shard %d".formatted(chunkId, shardId), e);
                 }
             }
         }
