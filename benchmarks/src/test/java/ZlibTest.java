@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
-import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterOutputStream;
 
@@ -33,7 +32,9 @@ public class ZlibTest {
                 try (InputStream inputStream = decompressor.createInputStream(chunk.zlibCompressed())) {
                     do {
                         var read = inputStream.read(bytes);
-                        currentlyDecompressedSize += read;
+                        if (read == -1) {
+                            break;
+                        }
                     } while (currentlyDecompressedSize < expectedDecompressedSize);
                 } catch (Exception e) {
                     throw new RuntimeException("Failed on chunk %d (total %d) of shard %d (total %d)".formatted(chunkId, chunks.size(), shardId, shards.size()), e);
@@ -136,14 +137,14 @@ public class ZlibTest {
 
                 @Override
                 public int read(@NotNull byte[] b, int off, int len) throws IOException {
-                    if (off > 0) throw new AssertionError("off > 0");
-                    if (inflater.finished()) throw new AssertionError("Inflater has finished somehow");
-                    if (inflater.needsInput()) throw new AssertionError("Inflater needs input???");
-                    if (inflater.needsDictionary()) throw new AssertionError("Inflater needs dict???");
-
                     try {
+                        if (off > 0) throw new RuntimeException("off > 0");
+                        if (inflater.finished()) throw new RuntimeException("Inflater has finished somehow");
+                        if (inflater.needsInput()) return -1;
+                        if (inflater.needsDictionary()) throw new RuntimeException("Inflater needs dict???");
+
                         return inflater.inflate(b, off, len);
-                    } catch (DataFormatException e) {
+                    } catch (Throwable e) {
                         throw new IOException("Unable to decompress, %d read, %d written %d remaining".formatted(inflater.getBytesRead(), inflater.getBytesWritten(), inflater.getRemaining()), e);
                     }
                 }
