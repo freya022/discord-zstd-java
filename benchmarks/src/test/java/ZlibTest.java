@@ -1,18 +1,21 @@
 import dev.freya02.discord.zstd.TestChunks;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import org.jetbrains.annotations.Nullable;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
+import java.util.zip.InflaterOutputStream;
 
 public class ZlibTest {
     @Test
-    public void test() {
+    public void test_input_stream() {
         var bytes = new byte[8192];
         var decompressor = new ZlibStreamingDecompressor();
         List<List<TestChunks.Chunk>> shards = TestChunks.get();
@@ -31,6 +34,29 @@ public class ZlibTest {
                         var read = inputStream.read(bytes);
                         currentlyDecompressedSize += read;
                     } while (currentlyDecompressedSize < expectedDecompressedSize);
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed on chunk %d (total %d) of shard %d (total %d)".formatted(chunkId, chunks.size(), shardId, shards.size()), e);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void test_output_stream() {
+        var inflater = new Inflater();
+        List<List<TestChunks.Chunk>> shards = TestChunks.get();
+
+        for (int shardId = 0; shardId < shards.size(); shardId++) {
+            List<TestChunks.Chunk> chunks = shards.get(shardId);
+
+            inflater.reset();
+            for (int chunkId = 0; chunkId < chunks.size(); chunkId++) {
+                TestChunks.Chunk chunk = chunks.get(chunkId);
+
+                var baos = new ByteArrayOutputStream();
+                try (var ios = new InflaterOutputStream(baos, inflater)) {
+                    ios.write(chunk.zlibCompressed());
+                    Assertions.assertArrayEquals(baos.toByteArray(), chunk.decompressed());
                 } catch (Exception e) {
                     throw new RuntimeException("Failed on chunk %d (total %d) of shard %d (total %d)".formatted(chunkId, chunks.size(), shardId, shards.size()), e);
                 }
