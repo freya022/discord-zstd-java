@@ -32,7 +32,7 @@ public class ZlibTest {
                         currentlyDecompressedSize += read;
                     } while (currentlyDecompressedSize < expectedDecompressedSize);
                 } catch (Exception e) {
-                    throw new RuntimeException("Failed on chunk %d of shard %d".formatted(chunkId, shardId), e);
+                    throw new RuntimeException("Failed on chunk %d (total %d) of shard %d".formatted(chunkId, shard.size(), shardId), e);
                 }
             }
         }
