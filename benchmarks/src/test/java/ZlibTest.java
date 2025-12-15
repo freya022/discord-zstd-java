@@ -17,12 +17,12 @@ public class ZlibTest {
         var decompressor = new ZlibStreamingDecompressor();
         List<List<TestChunks.Chunk>> shards = TestChunks.get();
 
-        for (int chunkId = 0; chunkId < shards.size(); chunkId++) {
-            List<TestChunks.Chunk> shard = shards.get(chunkId);
+        for (int shardId = 0; shardId < shards.size(); shardId++) {
+            List<TestChunks.Chunk> chunks = shards.get(shardId);
 
             decompressor.reset();
-            for (int shardId = 0; shardId < shard.size(); shardId++) {
-                TestChunks.Chunk chunk = shard.get(shardId);
+            for (int chunkId = 0; chunkId < chunks.size(); chunkId++) {
+                TestChunks.Chunk chunk = chunks.get(chunkId);
 
                 int currentlyDecompressedSize = 0;
                 int expectedDecompressedSize = chunk.decompressed().length;
@@ -32,7 +32,7 @@ public class ZlibTest {
                         currentlyDecompressedSize += read;
                     } while (currentlyDecompressedSize < expectedDecompressedSize);
                 } catch (Exception e) {
-                    throw new RuntimeException("Failed on chunk %d (total %d) of shard %d (total %d)".formatted(chunkId, shard.size(), shardId, shards.size()), e);
+                    throw new RuntimeException("Failed on chunk %d (total %d) of shard %d (total %d)".formatted(chunkId, chunks.size(), shardId, shards.size()), e);
                 }
             }
         }
