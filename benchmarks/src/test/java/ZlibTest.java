@@ -1,4 +1,5 @@
 import dev.freya02.discord.zstd.TestChunks;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +37,27 @@ public class ZlibTest {
                             break;
                         }
                     } while (currentlyDecompressedSize < expectedDecompressedSize);
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed on chunk %d (total %d) of shard %d (total %d)".formatted(chunkId, chunks.size(), shardId, shards.size()), e);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void test_input_stream_deser() {
+        var decompressor = new ZlibStreamingDecompressor();
+        List<List<TestChunks.Chunk>> shards = TestChunks.get();
+
+        for (int shardId = 0; shardId < shards.size(); shardId++) {
+            List<TestChunks.Chunk> chunks = shards.get(shardId);
+
+            decompressor.reset();
+            for (int chunkId = 0; chunkId < chunks.size(); chunkId++) {
+                TestChunks.Chunk chunk = chunks.get(chunkId);
+
+                try (InputStream inputStream = decompressor.createInputStream(chunk.zlibCompressed())) {
+                    DataObject.fromJson(inputStream);
                 } catch (Exception e) {
                     throw new RuntimeException("Failed on chunk %d (total %d) of shard %d (total %d)".formatted(chunkId, chunks.size(), shardId, shards.size()), e);
                 }
