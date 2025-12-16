@@ -103,6 +103,11 @@ public class ZstdStreamingBenchmark {
             decompressor = new ZlibStreamingDecompressor();
             buf = new byte[8192];
         }
+
+        @TearDown
+        public void tearDown() {
+            decompressor.close();
+        }
     }
 
     @Benchmark
@@ -172,6 +177,10 @@ public class ZstdStreamingBenchmark {
         public void reset()
         {
             inflater.reset();
+        }
+
+        public void close() {
+            inflater.close();
         }
 
         @Nullable

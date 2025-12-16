@@ -94,6 +94,11 @@ public class ZstdDecompressorBenchmark {
         public void setup() {
             decompressor = new ZlibDecompressor(ZLIB_BUFFER_SIZE);
         }
+
+        @TearDown
+        public void tearDown() {
+            decompressor.close();
+        }
     }
 
     @Benchmark
@@ -181,6 +186,10 @@ public class ZstdDecompressorBenchmark {
         public void reset()
         {
             inflater.reset();
+        }
+
+        public void close() {
+            inflater.close();
         }
 
         public byte[] decompress(byte[] data) throws DataFormatException
