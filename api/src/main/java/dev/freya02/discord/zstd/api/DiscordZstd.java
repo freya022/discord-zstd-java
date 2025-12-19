@@ -6,7 +6,6 @@ import java.io.InputStream;
 
 @NullMarked
 public interface DiscordZstd {
-    // TODO rename type
     /**
      * Creates a new {@link DiscordZstdContext}.
      * <br>This is used to keep track of streaming decompression after each input is consumed via an {@link InputStream}.
@@ -15,7 +14,6 @@ public interface DiscordZstd {
      */
     DiscordZstdContext createContext();
 
-    // TODO rename type
     /**
      * Creates a new {@link DiscordZstdDecompressorFactory} with the provided decompression buffer size.
      *
