@@ -6,9 +6,11 @@ jreleaser = "org.jreleaser:org.jreleaser.gradle.plugin:1.20.0"
 jspecify = "org.jspecify:jspecify:1.0.0"
 junit = "org.junit.jupiter:junit-jupiter:5.14.0"
 junit-launcher = "org.junit.platform:junit-platform-launcher:1.14.0"
+kotlin-logging-jvm = "io.github.oshai:kotlin-logging-jvm:7.0.13"
 kotlinx-coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2"
 slf4j = "org.slf4j:slf4j-api:2.0.17"
 logback-classic = "ch.qos.logback:logback-classic:1.5.21"
+trove4j-core = "net.sf.trove4j:core:3.1.0"
 zstd-jni = "com.github.luben:zstd-jni:1.5.7-6"
 
 [bundles]
