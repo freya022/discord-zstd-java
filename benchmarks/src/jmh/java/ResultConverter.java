@@ -81,6 +81,8 @@ private static String getScoreString(BenchmarkResults.Metric metric, BenchmarkRe
 }
 
 private static String getBaselineDiffString(BenchmarkResults.Metric metric, BenchmarkResults.Metric baselineMetric) {
+    if (metric == baselineMetric) return "";
+
     var baselineDiff = -(100 - (100 / baselineMetric.score * metric.score));
     String signum;
     if (Math.signum(baselineDiff) == 0.0) {
