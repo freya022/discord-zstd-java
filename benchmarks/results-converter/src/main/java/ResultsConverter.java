@@ -17,6 +17,10 @@ private record BenchmarkResults(
 }
 
 void main(String[] args) throws IOException {
+    if (args.length != 1) {
+        throw new IllegalArgumentException("One argument must be supplied for the input JSON");
+    }
+
     var resultsJson = Files.readString(Path.of(args[0]));
 
     var resultsList = JsonMapper.shared().readValue(resultsJson, new TypeReference<List<BenchmarkResults>>() {
