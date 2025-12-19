@@ -16,6 +16,8 @@ private val logger = KotlinLogging.logger { }
 private val shardFolderRegex = Regex("""shard-(\d+)-(?:zstd|zlib)""")
 private val logFileRegex = Regex("""log-(\d+)\.bin""")
 
+private const val minThroughput: Double = 100.0
+
 suspend fun main(args: Array<String>) {
     require(args.size == 1) {
         "One argument must be present for the logs input directory (decompression-logs)"
@@ -59,7 +61,7 @@ suspend fun main(args: Array<String>) {
             shard.sumOf { logFile ->
                 var retainedEntries = 0
                 readLogThroughputs(logFile) { throughput ->
-                    if (throughput > 100.0) {
+                    if (throughput > minThroughput) {
                         retainedEntries++
                     }
                 }
@@ -129,7 +131,7 @@ private fun CoroutineScope.processShard(shards: List<List<Path>>, metrics: Decom
                 val logIndexByte = logIndex.toUByte()
                 readLogFile(logFile, logIndexByte) { entry ->
                     // Take only those with a throughput of 100 bytes per microsecond
-                    if (entry.throughput <= 100.0) return@readLogFile
+                    if (entry.throughput <= minThroughput) return@readLogFile
                     metrics.accept(entry)
                 }
             }
