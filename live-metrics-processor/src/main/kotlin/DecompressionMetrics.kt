@@ -3,7 +3,7 @@ import gnu.trove.list.array.TLongArrayList
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.nanoseconds
 
-class DecompressionMetrics(entryAmount: Int) {
+class DecompressionMetrics(private val entryAmount: Int) {
     var addedEntries = 0
 
     var totalCompressed: Long = 0
@@ -91,6 +91,10 @@ class DecompressionMetrics(entryAmount: Int) {
     }
 
     fun finish() {
+        if (decompressTimes.size() != entryAmount) {
+            System.err.println("Mismatched entry amount, found ${decompressTimes.size()}, expected $entryAmount")
+        }
+
         decompressTimes.sort()
         decompressedSizes.sort()
         compressedSizes.sort()
