@@ -19,7 +19,7 @@ import kotlin.streams.asSequence
 private const val rootDirName = "gateway-chunks-zlib"
 
 private val chunkFolderRegex = Regex("""shard-(\d+)""")
-private val chunkFileRegex = Regex("""chunk-(\d+)\.bin.zlib""")
+private val chunkFileRegex = Regex("""chunk-(\d+)\.bin\.zlib""")
 
 @DisableCachingByDefault
 abstract class TestDataGeneratorTask : DefaultTask() {
