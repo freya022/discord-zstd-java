@@ -38,6 +38,8 @@ tasks.named<JavaCompile>("compileJava") {
 tasks.withType<Test> {
     useJUnitPlatform()
 
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
+
     filter {
         isFailOnNoMatchingTests = false
 

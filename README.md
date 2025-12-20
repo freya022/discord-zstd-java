@@ -39,6 +39,9 @@ dependencies {
 </dependency>
 ```
 
+> [!TIP]
+> To remove the warning when the natives are loaded, add `--enable-native-access=ALL-UNNAMED` to your JVM arguments.
+
 ### Usage
 As a bot developer, you don't need to do anything.
 
