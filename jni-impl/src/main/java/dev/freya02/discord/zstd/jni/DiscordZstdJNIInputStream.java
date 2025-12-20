@@ -53,7 +53,7 @@ class DiscordZstdJNIInputStream extends InputStream {
             return (int) inflate0(nativeStatePtr, input, inputSize, b, off, len);
         } catch (DiscordZstdException e) {
             context.invalidate();
-            throw new RuntimeException(e);
+            throw new IOException(e);
         }
     }
 
