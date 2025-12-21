@@ -4,6 +4,10 @@ import org.jspecify.annotations.NullMarked;
 
 import java.io.InputStream;
 
+/**
+ * Main interface which allows creating {@linkplain DiscordZstdContext decompression contexts},
+ * and {@linkplain DiscordZstdDecompressorFactory decompressor factories}.
+ */
 @NullMarked
 public interface DiscordZstd {
     /**
@@ -20,7 +24,7 @@ public interface DiscordZstd {
      * @param  bufferSizeHint
      *         A hint for the size of the buffer used for decompression,
      *         must be larger than {@value DiscordZstdDecompressor#MIN_BUFFER_SIZE} or be equal to {@value DiscordZstdDecompressor#ZSTD_RECOMMENDED_BUFFER_SIZE}.
-     *         Typically, bigger buffers mean less decompression loops, it does not change inputs or outputs
+     *         <br>Typically, bigger buffers mean less decompression loops, it does not change inputs or outputs
      *
      * @throws IllegalArgumentException
      *         If {@code bufferSize} is less than {@value DiscordZstdDecompressor#MIN_BUFFER_SIZE} and not {@value DiscordZstdDecompressor#ZSTD_RECOMMENDED_BUFFER_SIZE}

@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
+/**
+ * Entrypoint of {@code discord-zstd-java}. This is where you can get instances of {@link DiscordZstd}.
+ */
 @NullMarked
 public class DiscordZstdProvider {
 
