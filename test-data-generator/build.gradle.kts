@@ -9,10 +9,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
 }
 
-tasks.withType<Test> {
-    enabled = false
-}
-
 kotlin {
     compilerOptions {
         freeCompilerArgs = listOf("-Xcontext-parameters")
