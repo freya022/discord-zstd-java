@@ -1,5 +1,6 @@
 package dev.freya02.discord.zstd.api;
 
+import dev.freya02.discord.zstd.internal.Checks;
 import org.jspecify.annotations.NullMarked;
 
 import java.io.IOException;
@@ -38,9 +39,7 @@ public class DiscordZstdNativesLoader {
     public static synchronized boolean load(Path path) {
         if (init)
             return false;
-        //noinspection ConstantValue
-        if (path == null)
-            throw new IllegalArgumentException("path is null");
+        Checks.notNull(path, "Path");
         if (!path.isAbsolute())
             throw new IllegalArgumentException("path is not absolute: " + path);
 
@@ -71,12 +70,8 @@ public class DiscordZstdNativesLoader {
     public static synchronized boolean loadFromJar(String resourcePath, Class<?> clazz) throws IOException {
         if (init)
             return false;
-        //noinspection ConstantValue
-        if (resourcePath == null)
-            throw new IllegalArgumentException("resourcePath is null");
-        //noinspection ConstantValue
-        if (clazz == null)
-            throw new IllegalArgumentException("clazz is null");
+        Checks.notNull(resourcePath, "Resource path");
+        Checks.notNull(clazz, "Class");
 
         Path nativePath = IOUtil.copyNativeFromJar(resourcePath, clazz);
         load(nativePath);

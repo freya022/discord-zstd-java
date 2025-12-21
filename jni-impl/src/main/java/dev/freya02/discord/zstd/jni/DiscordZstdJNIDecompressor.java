@@ -2,6 +2,7 @@ package dev.freya02.discord.zstd.jni;
 
 import dev.freya02.discord.zstd.api.DiscordZstdException;
 import dev.freya02.discord.zstd.internal.AbstractZstdDecompressor;
+import dev.freya02.discord.zstd.internal.Checks;
 import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +60,7 @@ class DiscordZstdJNIDecompressor extends AbstractZstdDecompressor {
             throw new IllegalStateException("Decompressor is closed");
         if (invalidated)
             throw new IllegalStateException("Decompressor is in an errored state and needs to be reset");
-        //noinspection ConstantValue
-        if (data == null)
-            throw new IllegalArgumentException("data is null");
+        Checks.notNull(data, "Data");
 
         if (LOG.isTraceEnabled())
             LOG.trace("Decompressing data {}", Arrays.toString(data));

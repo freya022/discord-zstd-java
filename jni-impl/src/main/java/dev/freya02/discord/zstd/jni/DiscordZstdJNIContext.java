@@ -1,6 +1,7 @@
 package dev.freya02.discord.zstd.jni;
 
 import dev.freya02.discord.zstd.api.DiscordZstdContext;
+import dev.freya02.discord.zstd.internal.Checks;
 import org.jspecify.annotations.NullMarked;
 
 import java.io.InputStream;
@@ -47,6 +48,8 @@ class DiscordZstdJNIContext implements DiscordZstdContext {
 
     @Override
     public InputStream createInputStream(byte[] input) {
+        checkValid();
+        Checks.notNull(input, "Input");
         return new DiscordZstdJNIInputStream(this, zds, input);
     }
 

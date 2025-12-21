@@ -2,6 +2,7 @@ package dev.freya02.discord.zstd.ffm;
 
 import dev.freya02.discord.zstd.api.DiscordZstdContext;
 import dev.freya02.discord.zstd.api.DiscordZstdException;
+import dev.freya02.discord.zstd.internal.Checks;
 import org.jspecify.annotations.NullMarked;
 
 import java.io.InputStream;
@@ -38,14 +39,13 @@ class DiscordZstdFFMContext implements DiscordZstdContext {
 
     @Override
     public InputStream createInputStream(byte[] input) {
+        checkValid();
+        Checks.notNull(input, "Input");
         return new DiscordZstdFFMInputStream(this, input);
     }
 
     public void decompress(MemorySegment dst, long dstCapacity, MemorySegment dstPos, MemorySegment src, long srcSize, MemorySegment srcPos) {
-        if (closed)
-            throw new IllegalStateException("Context is closed");
-        if (invalidated)
-            throw new IllegalStateException("Context is in an errored state and needs to be reset");
+        checkValid();
 
         long result = Zstd.ZSTD_decompressStream_simpleArgs(stream, dst, dstCapacity, dstPos, src, srcSize, srcPos);
 
@@ -57,5 +57,12 @@ class DiscordZstdFFMContext implements DiscordZstdContext {
     public DiscordZstdException createException(String message) {
         invalidated = true;
         return new DiscordZstdException(message);
+    }
+
+    private void checkValid() {
+        if (closed)
+            throw new IllegalStateException("Context is closed");
+        if (invalidated)
+            throw new IllegalStateException("Context is in an errored state and needs to be reset");
     }
 }
