@@ -20,8 +20,7 @@ class DiscordZstdJNIDecompressor extends AbstractZstdDecompressor {
     private boolean invalidated = false;
     private boolean closed = false;
 
-    protected DiscordZstdJNIDecompressor(int bufferSizeHint)
-    {
+    protected DiscordZstdJNIDecompressor(int bufferSizeHint) {
         this.zds = createDStream();
 
         int bufferSize = bufferSizeHint == ZSTD_RECOMMENDED_BUFFER_SIZE
@@ -34,8 +33,7 @@ class DiscordZstdJNIDecompressor extends AbstractZstdDecompressor {
     }
 
     @Override
-    public void reset()
-    {
+    public void reset() {
         if (closed)
             throw new IllegalStateException("Decompressor is closed");
 
@@ -44,8 +42,7 @@ class DiscordZstdJNIDecompressor extends AbstractZstdDecompressor {
     }
 
     @Override
-    public void close()
-    {
+    public void close() {
         if (closed)
             return;
 
@@ -54,8 +51,7 @@ class DiscordZstdJNIDecompressor extends AbstractZstdDecompressor {
     }
 
     @Override
-    public byte[] decompress(byte[] data)
-    {
+    public byte[] decompress(byte[] data) {
         if (closed)
             throw new IllegalStateException("Decompressor is closed");
         if (invalidated)
@@ -74,8 +70,12 @@ class DiscordZstdJNIDecompressor extends AbstractZstdDecompressor {
     }
 
     private static native long createDStream();
+
     private static native long freeDStream(long zds);
+
     private static native int DStreamOutSize();
+
     private static native long initDStream(long zds);
+
     private static native byte[] decompressMessage(long zds, byte[] buffer, byte[] input);
 }

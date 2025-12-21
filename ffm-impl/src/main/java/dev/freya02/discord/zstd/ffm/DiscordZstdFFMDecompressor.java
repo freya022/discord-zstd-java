@@ -27,8 +27,7 @@ class DiscordZstdFFMDecompressor extends AbstractZstdDecompressor {
     private boolean invalidated = false;
     private boolean closed = false;
 
-    protected DiscordZstdFFMDecompressor(int bufferSizeHint)
-    {
+    protected DiscordZstdFFMDecompressor(int bufferSizeHint) {
         this.stream = Zstd.ZSTD_createDStream();
 
         int bufferSize = bufferSizeHint == ZSTD_RECOMMENDED_BUFFER_SIZE
@@ -45,8 +44,7 @@ class DiscordZstdFFMDecompressor extends AbstractZstdDecompressor {
     }
 
     @Override
-    public void reset()
-    {
+    public void reset() {
         if (closed)
             throw new IllegalStateException("Decompressor is closed");
 
@@ -55,8 +53,7 @@ class DiscordZstdFFMDecompressor extends AbstractZstdDecompressor {
     }
 
     @Override
-    public void close()
-    {
+    public void close() {
         if (closed)
             return;
 
@@ -71,8 +68,7 @@ class DiscordZstdFFMDecompressor extends AbstractZstdDecompressor {
      * and always return non-null decompressed data
      */
     @Override
-    public byte[] decompress(byte[] data)
-    {
+    public byte[] decompress(byte[] data) {
         if (closed)
             throw new IllegalStateException("Decompressor is closed");
         if (invalidated)
@@ -83,8 +79,7 @@ class DiscordZstdFFMDecompressor extends AbstractZstdDecompressor {
             LOG.trace("Decompressing data {}", Arrays.toString(data));
 
         List<byte[]> chunks = new ArrayList<>();
-        try (Arena arena = Arena.ofConfined())
-        {
+        try (Arena arena = Arena.ofConfined()) {
             // Copy compressed data to native memory
             final MemorySegment inputSegment = MemorySegment.ofArray(data);
             final long inputSize = data.length;

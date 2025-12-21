@@ -23,8 +23,7 @@ public class ZstdJNADecompressor extends AbstractZstdDecompressor {
     private boolean invalidated = false;
     private boolean closed = false;
 
-    protected ZstdJNADecompressor(int bufferSizeHint)
-    {
+    protected ZstdJNADecompressor(int bufferSizeHint) {
         this.stream = ZstdJna.INSTANCE.ZSTD_createDStream();
 
         int bufferSize = bufferSizeHint == ZSTD_RECOMMENDED_BUFFER_SIZE
@@ -37,8 +36,7 @@ public class ZstdJNADecompressor extends AbstractZstdDecompressor {
     }
 
     @Override
-    public void reset()
-    {
+    public void reset() {
         if (closed)
             throw new IllegalStateException("Decompressor is closed");
 
@@ -47,8 +45,7 @@ public class ZstdJNADecompressor extends AbstractZstdDecompressor {
     }
 
     @Override
-    public void close()
-    {
+    public void close() {
         if (closed)
             return;
 
@@ -63,8 +60,7 @@ public class ZstdJNADecompressor extends AbstractZstdDecompressor {
      * and always return non-null decompressed data
      */
     @Override
-    public byte[] decompress(byte[] data)
-    {
+    public byte[] decompress(byte[] data) {
         if (closed)
             throw new IllegalStateException("Decompressor is closed");
         if (invalidated)
