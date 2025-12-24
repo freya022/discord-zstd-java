@@ -16,7 +16,7 @@ repositories {
 
 val mockitoAgent by configurations.creating
 dependencies {
-    implementation(project(":api"))
+    api(project(":api"))
     runtimeOnly(project(":jni-impl"))
 
     implementation(libs.jda.snapshot)
