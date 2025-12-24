@@ -12,54 +12,35 @@ Lightweight modular support for Zstandard streaming decompression, for JVM Disco
 - Windows: x86-64, aarch64
 - macOS (darwin): x86-64, aarch64
 
-## 🤖 For bot developers
+## 🔥 For JDA users
 
-### Installation
-
-You're likely here if you want to use Zstd decompression for your Discord bot!
-
-[![discord-zstd-java-jni-impl on Maven Central][jni-impl-maven-central-shield] ][jni-impl-maven-central-link]
-
-This is compatible with Java 8+.
-
-#### Gradle
-```kotlin
-dependencies {
-    runtimeOnly("dev.freya02:discord-zstd-java-jni-impl:VERSION") // TODO replace VERSION with current release
-}
-```
-
-#### Maven
-```xml
-<dependency>
-    <groupId>dev.freya02</groupId>
-    <artifactId>discord-zstd-java-jni-impl</artifactId>
-    <version>VERSION</version> <!-- TODO replace VERSION with current release -->
-    <scope>runtime</scope>
-</dependency>
-```
-
-> [!TIP]
-> To remove the warning when the natives are loaded, add `--enable-native-access=ALL-UNNAMED` to your JVM arguments.
-
-### Usage
-As a bot developer, you don't need to do anything.
-
-If you want to load a different version of the native library,
-you can do so by calling `ZstdNativesLoader.load(Path)` or `loadFromJar(String)`. These functions will return `false` if the natives were already loaded, as they can't be replaced.
+See the [JDA integration module](jda-integration).
 
 ## 📖 For library developers
-### Installation
 
 [![discord-zstd-java-api on Maven Central][api-maven-central-shield] ][api-maven-central-link]
 
-You will only need the `dev.freya02:discord-zstd-java-api:VERSION` dependency, it is compatible with Java 8+.
+### Built-in integration
 
-### Usage
+If you decide to integrate this library into yours,
+you will only need the `dev.freya02:discord-zstd-java-api:VERSION` dependency, it is compatible with Java 8+.
+
+Your users will need to install an implementation, we recommend using `discord-zstd-java-jni-impl`.
+
+The users can also load a different version of the native library,
+they can do so by calling `ZstdNativesLoader.load(Path)` or `loadFromJar(String)`.
+These functions will return `false` if the natives were already loaded, as they can't be replaced.
+
+#### Usage
 
 The main interface is `DiscordZstd`, you can get an instance with `DiscordZstdProvider.get()`.
 Then, you can either:
 1. Do bulk processing with a decompressor obtained with `DiscordZstd#createDecompressor` and kept per gateway connection,
    calling `ZstdDecompressor#decompress` on each gateway message
 2. Process gradually with a context obtained from `DiscordZstd#createContext` and kept per gateway connection,
-    then making input streams with `ZstdContext#createInputStream` from each gateway message
+   then making input streams with `ZstdContext#createInputStream` from each gateway message
+
+### External integration
+
+You can also provide an API in your library, this way users can choose to use any decompression library they want.
+After creating your API, please submit a pull request here with a new module which implements that API.
