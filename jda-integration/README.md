@@ -7,6 +7,8 @@
 
 Lightweight Zstandard decompression for the Java Discord API. (JDA)
 
+This module is typically useful for sharded (large) bots, if you are interested in the performance difference, see [here](BENCHMARKS.md).
+
 ## Installation
 
 [![discord-zstd-java-jda-integration on Maven Central][jda-integration-maven-central-shield] ][jda-integration-maven-central-link]
