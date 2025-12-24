@@ -76,7 +76,7 @@ public class ZstdStreamedTransportGatewayDecompressor implements GatewayDecompre
         @Override
         public int read(byte[] b, int off, int len) throws IOException {
             try {
-                return super.read(b, off, len);
+                return in.read(b, off, len);
             } catch (IOException e) {
                 Throwable cause = e.getCause();
                 if (cause instanceof DiscordZstdException) {
