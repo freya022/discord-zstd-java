@@ -13,8 +13,27 @@ class IOUtil {
         path.toFile().deleteOnExit();
 
         try (InputStream stream = clazz.getResourceAsStream(resourcePath)) {
+            if (stream == null) {
+                if (resourcePath.startsWith("/")) {
+                    throw new FileNotFoundException("Natives not found at '" + resourcePath + "'");
+                } else {
+                    throw new FileNotFoundException("Natives not found at '" + resourcePath + "' relative to '" + clazz.getPackage().getName() + "'");
+                }
+            }
+
+            Files.copy(stream, path, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        return path;
+    }
+
+    static Path copyNativeFromJar(String resourcePath, ClassLoader loader) throws IOException {
+        final Path path = Files.createTempFile("libzstd", null);
+        path.toFile().deleteOnExit();
+
+        try (InputStream stream = loader.getResourceAsStream(resourcePath)) {
             if (stream == null)
-                throw new FileNotFoundException("Natives not found at '" + resourcePath + "' relative to '" + clazz.getPackage().getName() + "'");
+                throw new FileNotFoundException("Natives not found at '" + resourcePath + "'");
 
             Files.copy(stream, path, StandardCopyOption.REPLACE_EXISTING);
         }

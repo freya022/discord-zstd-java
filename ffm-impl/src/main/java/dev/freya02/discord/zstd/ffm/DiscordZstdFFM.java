@@ -18,8 +18,9 @@ public class DiscordZstdFFM implements DiscordZstd {
         // Load natives if they weren't already
         if (!DiscordZstdNativesLoader.isLoaded()) {
             NativeUtil.System system = NativeUtil.getSystem();
-            String absoluteNativeResource = String.format("/dev/freya02/discord/zstd/natives/%s/libzstd.%s", system.platform, system.sharedLibraryExtension);
-            DiscordZstdNativesLoader.loadFromJar(absoluteNativeResource, DiscordZstd.class);
+            String absoluteNativeResource = String.format("dev/freya02/discord/zstd/natives/%s/libzstd.%s", system.platform, system.sharedLibraryExtension);
+            // Use ClassLoader as natives are in another module
+            DiscordZstdNativesLoader.loadFromJar(absoluteNativeResource, DiscordZstd.class.getClassLoader());
         }
     }
 

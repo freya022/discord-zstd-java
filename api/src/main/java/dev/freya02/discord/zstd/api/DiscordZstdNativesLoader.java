@@ -77,4 +77,34 @@ public class DiscordZstdNativesLoader {
         load(nativePath);
         return true;
     }
+
+    /**
+     * Loads the natives using the provided path from the provided class.
+     *
+     * <p>When, and only when using modules, the resource will be loaded from one of the modules loaded by the provided class loader.
+     * <br>If the resource path does not represent a valid package name, it can be loaded from any module, if it forms a valid package name,
+     * it is subject to encapsulation rules specified by {@link java.lang.Module#getResourceAsStream(String) Module.getResourceAsStream}.
+     *
+     * @param  resourcePath
+     *         The path to the native library in the provided class
+     * @param  loader
+     *         The class loader from which to load the resource from
+     *
+     * @throws IllegalArgumentException
+     *         If {@code resourcePath} or {@code loader} is {@code null}
+     * @throws IOException
+     *         If the resource does not exist or when extracting it fails
+     *
+     * @return {@code true} if the natives were loaded, {@code false} if they already were
+     */
+    public static synchronized boolean loadFromJar(String resourcePath, ClassLoader loader) throws IOException {
+        if (init)
+            return false;
+        Checks.notNull(resourcePath, "Resource path");
+        Checks.notNull(loader, "Class loader");
+
+        Path nativePath = IOUtil.copyNativeFromJar(resourcePath, loader);
+        load(nativePath);
+        return true;
+    }
 }
