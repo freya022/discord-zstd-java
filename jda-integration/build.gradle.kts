@@ -53,6 +53,12 @@ tasks.test {
     jvmArgs("-javaagent:${mockitoAgent.asPath}")
 }
 
+tasks.jar {
+    manifest {
+        attributes("Automatic-Module-Name" to "discord.zstd.java.jda.integration")
+    }
+}
+
 registerPublication(
     name = fullProjectName,
     description = "Lightweight Zstandard decompressor for JDA",
