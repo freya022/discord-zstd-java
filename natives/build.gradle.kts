@@ -20,6 +20,12 @@ tasks.named<JavaCompile>("compileJava") {
     options.release.set(8)
 }
 
+tasks.jar {
+    manifest {
+        attributes("Automatic-Module-Name" to "discord.zstd.java.natives")
+    }
+}
+
 registerPublication(
     name = fullProjectName,
     description = "Minimal Zstandard decompression natives for JVM Discord API wrappers",

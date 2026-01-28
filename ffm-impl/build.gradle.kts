@@ -51,6 +51,12 @@ tasks.withType<Test> {
     }
 }
 
+tasks.jar {
+    manifest {
+        attributes("Automatic-Module-Name" to "discord.zstd.java.ffm.impl")
+    }
+}
+
 registerPublication(
     name = fullProjectName,
     description = "Zstandard streaming decompression API for JVM Discord API wrappers using the Foreign Function & Memory API",

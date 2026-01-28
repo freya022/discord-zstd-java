@@ -50,6 +50,12 @@ tasks.withType<Test> {
     }
 }
 
+tasks.jar {
+    manifest {
+        attributes("Automatic-Module-Name" to "discord.zstd.java.jni.impl")
+    }
+}
+
 registerPublication(
     name = fullProjectName,
     description = "Zstandard streaming decompression API for JVM Discord API wrappers using Java Native Interface (JNI)",

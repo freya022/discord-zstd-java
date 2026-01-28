@@ -27,6 +27,12 @@ tasks.named<JavaCompile>("compileJava") {
     options.release.set(8)
 }
 
+tasks.jar {
+    manifest {
+        attributes("Automatic-Module-Name" to "discord.zstd.java.api")
+    }
+}
+
 registerPublication(
     name = fullProjectName,
     description = "Core of the Zstandard streaming decompression API for JVM Discord API wrappers",
